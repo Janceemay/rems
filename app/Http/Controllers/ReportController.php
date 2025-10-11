@@ -16,7 +16,6 @@ class ReportController extends Controller
 
     public function generate(Request $request)
     {
-        
         return back()->with('info','Report generation is not implemented in this scaffold. Implement using maatwebsite/excel or dompdf.');
     }
 }

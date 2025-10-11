@@ -3,10 +3,12 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StorePaymentRequest extends FormRequest{
     public function authorize() {
-        return $this->user()->isRole('Agent') || $this->user()->isRole('Sales Manager');
+        $user = Auth::user();
+        return $user && ($user->isRole('Agent') || $user->isRole('Sales Manager'));
     }
 
     public function rules() {

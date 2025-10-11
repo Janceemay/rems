@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePropertyRequest;
-use App\Http\Requests\UpdatePropertyRequest;
 use App\Models\Property;
 use App\Models\Developer;
-use App\Models\PropertyAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use App\Models\AuditLog;
 
 class PropertyController extends Controller {
@@ -41,11 +41,12 @@ class PropertyController extends Controller {
         return view('properties.create', compact('developers'));
     }
 
-    public function store(StorePropertyRequest $request)
+    public function store(Request $request)
     {
-        $data = $request->validated();
+        $validator = Validator::make($request->all(), (new StorePropertyRequest())->rules());
+        $data = $validator->validate();
 
-        if (!$data['property_code'] ?? false) {
+        if (!($data['property_code'] ?? false)) {
             $data['property_code'] = 'PROP-'.Str::upper(Str::random(6));
         }
 
@@ -62,7 +63,7 @@ class PropertyController extends Controller {
         $property = Property::create($data);
 
         AuditLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'action' => 'create',
             'target_table' => 'properties',
             'target_id' => $property->property_id,
@@ -71,7 +72,6 @@ class PropertyController extends Controller {
 
         return redirect()->route('properties.index')->with('success','Property created');
     }
-
     public function show(Property $property)
     {
         return view('properties.show', compact('property'));

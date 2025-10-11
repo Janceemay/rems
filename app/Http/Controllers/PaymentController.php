@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\Payment;
-use App\Models\Transaction;
 use App\Models\AuditLog;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller {
     public function index() {
@@ -19,7 +18,7 @@ class PaymentController extends Controller {
         $payment = Payment::create($data);
 
         AuditLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'action' => 'create',
             'target_table' => 'payments',
             'target_id' => $payment->payment_id,
@@ -38,7 +37,7 @@ class PaymentController extends Controller {
         $payment->update($data);
 
         AuditLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'action' => 'update',
             'target_table' => 'payments',
             'target_id' => $payment->payment_id,
@@ -52,7 +51,7 @@ class PaymentController extends Controller {
         $payment->delete();
 
         AuditLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'action' => 'delete',
             'target_table' => 'payments',
             'target_id' => $payment->payment_id,

@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Property;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller {
     public function index() {
@@ -30,9 +31,8 @@ class TransactionController extends Controller {
         }
 
         $transaction = Transaction::create($data);
-
         AuditLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'action' => 'create',
             'target_table' => 'transactions',
             'target_id' => $transaction->transaction_id,
@@ -46,32 +46,31 @@ class TransactionController extends Controller {
         $transaction->load('payments','commissions','client.user','property','agent');
         return view('transactions.show', compact('transaction'));
     }
-
-    public function approve(Request $request, Transaction $transaction){
+    
+    public function approve(Transaction $transaction){
         $transaction->status = 'Approved';
         $transaction->approval_date = now();
         $transaction->save();
 
         AuditLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'action' => 'approve',
             'target_table' => 'transactions',
             'target_id' => $transaction->transaction_id,
-            'remarks' => 'Transaction approved by '.auth()->user()->full_name
+            'remarks' => 'Transaction approved by '.optional(Auth::user())->full_name
         ]);
 
         return redirect()->back()->with('success','Transaction approved.');
     }
 
-    public function cancel(Request $request, Transaction $transaction)
-    {
+    public function cancel(Request $request, Transaction $transaction) {
         $request->validate(['reason'=>'required|string']);
         $transaction->status = 'Cancelled';
         $transaction->cancellation_reason = $request->reason;
         $transaction->save();
-
+        
         AuditLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'action' => 'cancel',
             'target_table' => 'transactions',
             'target_id' => $transaction->transaction_id,

@@ -24,12 +24,13 @@ class DeveloperController extends Controller {
             'address'=>'nullable|string'
         ]);
 
-        Developer::create($data);
-        return redirect()->route('developers.index')->with('success','Developer created');
-    }
-
-    public function edit(Developer $developer) {
-        return view('developers.edit', compact('developer'));
+        $developer = new Developer();
+        $developer->developer_name = $data['developer_name'];
+        $developer->contact_person = $data['contact_person'] ?? null;
+        $developer->contact_number = $data['contact_number'] ?? null;
+        $developer->email = $data['email'] ?? null;
+        $developer->address = $data['address'] ?? null;
+        $developer->save();
     }
 
     public function update(Request $request, Developer $developer) {
@@ -41,7 +42,14 @@ class DeveloperController extends Controller {
             'address'=>'nullable|string'
         ]);
 
-        $developer->update($data);
+        $developer->update([
+            'developer_name' => $data['developer_name'],
+            'contact_person' => $data['contact_person'] ?? null,
+            'contact_number' => $data['contact_number'] ?? null,
+            'email' => $data['email'] ?? null,
+            'address' => $data['address'] ?? null,
+        ]);
+
         return redirect()->route('developers.index')->with('success','Developer updated');
     }
 
