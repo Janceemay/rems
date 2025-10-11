@@ -13,12 +13,12 @@ use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\NotificationController;
 
-Route::get('/','AuthController@showLogin')->name('login');
-Route::get('/login','AuthController@showLogin')->name('login');
-Route::post('/login','AuthController@login')->name('login.post');
-Route::get('/register','AuthController@showRegister')->name('register');
-Route::post('/register','AuthController@register')->name('register.post');
-Route::post('/logout','AuthController@logout')->name('logout');
+Route::get("/", [AuthController::class, 'showLogin'])->name('login');
+Route::get("/login", [AuthController::class, 'showLogin'])->name('login');
+Route::get("/login", [AuthController::class, 'login'])->name('login.post');
+Route::get("/register", [AuthController::class, 'showRegister'])->name('register');
+Route::get("/register", [AuthController::class, 'register'])->name('register.post');
+Route::get("/logout", [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function(){
 
