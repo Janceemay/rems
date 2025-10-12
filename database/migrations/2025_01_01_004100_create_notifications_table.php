@@ -6,13 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateNotificationsTable extends Migration {
     public function up() {
-        Schema::create('notifications', function(Blueprint $table){
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id('notif_id');
-            $table->foreignId('user_id')->constrained('users','user_id')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('title',100)->nullable();
-            $table->text('message')->nullable();
+            $table->unsignedBigInteger('user_id');
+            $table->string('title');
+            $table->text('message');
+            $table->string('type')->nullable(); // e.g., transaction, property, system
             $table->boolean('is_read')->default(false);
             $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
+
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
         });
     }
 

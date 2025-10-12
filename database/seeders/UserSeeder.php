@@ -3,48 +3,71 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Client;
+use App\Models\{User, Role, Client, Agent, SalesManager};
 
-class UserSeeder extends Seeder
-{
-    public function run()
-    {
-        $adminRole = Role::where('role_name','Admin')->first();
-        $salesRole = Role::where('role_name','Sales Manager')->first();
-        $agentRole = Role::where('role_name','Agent')->first();
-        $clientRole = Role::where('role_name','Client')->first();
+class UserSeeder extends Seeder {
+    public function run() {
+        $adminRole = Role::where('role_name', 'Admin')->first();
+        $managerRole = Role::where('role_name', 'Sales Manager')->first();
+        $agentRole = Role::where('role_name', 'Agent')->first();
+        $clientRole = Role::where('role_name', 'Client')->first();
 
-        $admin = User::create([
-            'role_id' => $adminRole->role_id,
-            'full_name' => 'System Admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'role_id' => $adminRole->role_id,
+                'full_name' => 'System Admin',
+                'password' => Hash::make('password'),
+                'status' => 'active',
+            ]
+        );
 
-        $sm = User::create([
-            'role_id' => $salesRole->role_id,
-            'full_name' => 'Sales Manager',
-            'email' => 'manager@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        $managerUser = User::updateOrCreate(
+            ['email' => 'manager@example.com'],
+            [
+                'role_id' => $managerRole->role_id,
+                'full_name' => 'Sales Manager',
+                'password' => Hash::make('password'),
+                'status' => 'active',
+            ]
+        );
 
-        $agent = User::create([
-            'role_id' => $agentRole->role_id,
-            'full_name' => 'Agent One',
-            'email' => 'agent@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        SalesManager::updateOrCreate(
+            ['user_id' => $managerUser->user_id],
+            ['department' => 'Sales Department', 'quota_id' => null]
+        );
 
-        $clientUser = User::create([
-            'role_id' => $clientRole->role_id,
-            'full_name' => 'Client One',
-            'email' => 'client@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        $agentUser = User::updateOrCreate(
+            ['email' => 'agent@example.com'],
+            [
+                'role_id' => $agentRole->role_id,
+                'full_name' => 'Agent One',
+                'password' => Hash::make('password'),
+                'status' => 'active',
+            ]
+        );
 
-        Client::create(['user_id' => $clientUser->user_id, 'current_job'=>'Engineer', 'financing_type'=>'Cash']);
+        Agent::updateOrCreate(
+            ['user_id' => $agentUser->user_id],
+            ['rank' => 'Junior Agent', 'contact_no' => '09123456789', 'email' => $agentUser->email]
+        );
+
+        $clientUser = User::updateOrCreate(
+            ['email' => 'client@example.com'],
+            [
+                'role_id' => $clientRole->role_id,
+                'full_name' => 'Client One',
+                'password' => Hash::make('password'),
+                'status' => 'active',
+            ]
+        );
+
+        Client::updateOrCreate(
+            ['user_id' => $clientUser->user_id],
+            ['current_job' => 'Engineer', 'financing_type' => 'Cash']
+        );
+
+        $this->command->info('✅ Users, Agents, Managers, and Clients seeded successfully!');
     }
 }

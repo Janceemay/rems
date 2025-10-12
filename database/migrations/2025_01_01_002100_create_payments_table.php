@@ -6,16 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 class CreatePaymentsTable extends Migration {
     public function up() {
-        Schema::create('payments', function(Blueprint $table){
+        Schema::create('payments', function (Blueprint $table) {
             $table->id('payment_id');
-            $table->foreignId('transaction_id')->constrained('transactions','transaction_id')->onUpdate('cascade')->onDelete('cascade');
+            $table->unsignedBigInteger('transaction_id');
             $table->date('due_date')->nullable();
-            $table->decimal('amount_due',15,2)->nullable();
-            $table->decimal('amount_paid',15,2)->default(0.00);
+            $table->decimal('amount_due', 15, 2)->default(0);
+            $table->decimal('amount_paid', 15, 2)->default(0);
             $table->date('payment_date')->nullable();
-            $table->enum('payment_status',['Pending','Paid','Overdue'])->default('Pending');
+            $table->enum('payment_status', ['pending', 'partial', 'paid', 'overdue', 'approved'])->default('pending');
             $table->text('remarks')->nullable();
             $table->timestamps();
+
+            $table->foreign('transaction_id')->references('transaction_id')->on('transactions')->onDelete('cascade');
         });
     }
 

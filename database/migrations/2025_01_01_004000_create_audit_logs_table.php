@@ -6,14 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateAuditLogsTable extends Migration {
     public function up() {
-        Schema::create('audit_logs', function(Blueprint $table){
+        Schema::create('audit_logs', function (Blueprint $table) {
             $table->id('log_id');
-            $table->foreignId('user_id')->nullable()->constrained('users','user_id')->onUpdate('cascade')->onDelete('set null');
-            $table->string('action',100);
-            $table->string('target_table',100)->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('action');
+            $table->string('target_table');
             $table->unsignedBigInteger('target_id')->nullable();
-            $table->timestamp('timestamp')->useCurrent();
             $table->text('remarks')->nullable();
+            $table->timestamps();
+
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('set null');
         });
     }
 
