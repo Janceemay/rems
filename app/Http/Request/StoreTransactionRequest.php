@@ -31,8 +31,8 @@ class StoreTransactionRequest extends FormRequest {
 
     public function withValidator(Validator $validator) {
         $validator->after(function ($validator) {
-            $propertyId = $this->input('property_id');
-            $clientId = $this->input('client_id');
+            $propertyId = $validator->input('property_id');
+            $clientId = $validator->input('client_id');
 
             $property = Property::find($propertyId);
             if ($property && $property->status !== 'Available') {

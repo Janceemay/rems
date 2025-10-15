@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
 
 class StorePropertyRequest extends FormRequest {
@@ -12,8 +13,8 @@ class StorePropertyRequest extends FormRequest {
         return $user && ($user->isRole('Admin') || $user->isRole('Sales Manager'));
     }
 
-    public function rules() {
-        $propertyId = $this->route('property')?->property_id ?? null;
+    public function rules(Request $request) {
+        $propertyId = $request->route('property')?->property_id ?? null;
 
         return [
             'developer_id' => 'nullable|exists:developers,developer_id',

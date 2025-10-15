@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSalesManagerTable extends Migration {
+class CreateSalesManagersTable extends Migration {
     public function up() {
         Schema::create('sales_managers', function (Blueprint $table) {
             $table->id('manager_id');

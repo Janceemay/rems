@@ -14,7 +14,7 @@ class CreateNotificationsTable extends Migration {
             $table->string('type')->nullable(); // e.g., transaction, property, system
             $table->boolean('is_read')->default(false);
             $table->timestamp('created_at')->useCurrent();
-            $table->timestamps();
+            $table->timestamp('updated_at')->nullable();
 
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
         });
