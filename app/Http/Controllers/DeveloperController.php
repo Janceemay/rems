@@ -3,62 +3,103 @@
 namespace App\Http\Controllers;
 
 use App\Models\Developer;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DeveloperController extends Controller {
     public function index() {
-        $developers = Developer::paginate(20);
+        $developers = Developer::paginate(15);
         return view('developers.index', compact('developers'));
     }
 
-    public function create() {
+    public function create()
+    {
+        $this->authorizeRoles(['Admin', 'Sales Manager']);
         return view('developers.create');
     }
 
     public function store(Request $request) {
+        $this->authorizeRoles(['Admin', 'Sales Manager']);
+
         $data = $request->validate([
-            'developer_name'=>'required|string|max:100',
-            'contact_person'=>'nullable|string|max:100',
-            'contact_number'=>'nullable|string|max:20',
-            'email'=>'nullable|email',
-            'address'=>'nullable|string'
+            'developer_name'  => 'required|string|max:100',
+            'contact_person'  => 'nullable|string|max:100',
+            'contact_number'  => 'nullable|string|max:20',
+            'email'           => 'nullable|email|max:100',
+            'address'         => 'nullable|string|max:255',
+            'description'     => 'nullable|string|max:500',
         ]);
 
-        $developer = new Developer();
-        $developer->developer_name = $data['developer_name'];
-        $developer->contact_person = $data['contact_person'] ?? null;
-        $developer->contact_number = $data['contact_number'] ?? null;
-        $developer->email = $data['email'] ?? null;
-        $developer->address = $data['address'] ?? null;
-        $developer->save();
-    }
+        $developer = Developer::create($data);
 
-    public function update(Request $request, Developer $developer) {
-        $data = $request->validate([
-            'developer_name'=>'required|string|max:100',
-            'contact_person'=>'nullable|string|max:100',
-            'contact_number'=>'nullable|string|max:20',
-            'email'=>'nullable|email',
-            'address'=>'nullable|string'
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'create',
+            'target_table' => 'developers',
+            'target_id' => $developer->developer_id,
+            'remarks' => "Developer '{$developer->developer_name}' created by " . Auth::user()->full_name,
         ]);
 
-        $developer->update([
-            'developer_name' => $data['developer_name'],
-            'contact_person' => $data['contact_person'] ?? null,
-            'contact_number' => $data['contact_number'] ?? null,
-            'email' => $data['email'] ?? null,
-            'address' => $data['address'] ?? null,
-        ]);
-
-        return redirect()->route('developers.index')->with('success','Developer updated');
-    }
-
-    public function destroy(Developer $developer) {
-        $developer->delete();
-        return redirect()->route('developers.index')->with('success','Developer deleted');
+        return redirect()->route('developers.index')->with('success', 'Developer created successfully.');
     }
 
     public function show(Developer $developer) {
+        $developer->load('properties');
         return view('developers.show', compact('developer'));
+    }
+
+    public function edit(Developer $developer) {
+        $this->authorizeRoles(['Admin', 'Sales Manager']);
+        return view('developers.edit', compact('developer'));
+    }
+
+    public function update(Request $request, Developer $developer) {
+        $this->authorizeRoles(['Admin', 'Sales Manager']);
+
+        $data = $request->validate([
+            'developer_name'  => 'required|string|max:100',
+            'contact_person'  => 'nullable|string|max:100',
+            'contact_number'  => 'nullable|string|max:20',
+            'email'           => 'nullable|email|max:100',
+            'address'         => 'nullable|string|max:255',
+            'description'     => 'nullable|string|max:500',
+        ]);
+
+        $developer->update($data);
+
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update',
+            'target_table' => 'developers',
+            'target_id' => $developer->developer_id,
+            'remarks' => "Developer '{$developer->developer_name}' updated by " . Auth::user()->full_name,
+        ]);
+
+        return redirect()->route('developers.index')->with('success', 'Developer updated successfully.');
+    }
+
+    public function destroy(Developer $developer) {
+        $this->authorizeRoles(['Admin', 'Sales Manager']);
+
+        $developerName = $developer->developer_name;
+        $developer->delete();
+
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'delete',
+            'target_table' => 'developers',
+            'target_id' => $developer->developer_id,
+            'remarks' => "Developer '{$developerName}' deleted by " . Auth::user()->full_name,
+        ]);
+
+        return redirect()->route('developers.index')->with('success', 'Developer deleted successfully.');
+    }
+
+    private function authorizeRoles(array $roles) {
+        $userRole = optional(Auth::user()->role)->role_name ?? '';
+        if (!in_array($userRole, $roles)) {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }

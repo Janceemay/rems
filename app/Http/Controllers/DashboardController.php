@@ -4,47 +4,153 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Property;
-use App\Models\Transaction;
-use App\Models\User;
-use App\Models\Payment;
+use App\Models\{Property, Transaction, User, Payment, Commission, Team, Quota, AuditLog};
 
 class DashboardController extends Controller {
     public function index() {
-        $totalProperties = Property::count();
-        $available = Property::where('status','Available')->count();
-        $sold = Property::where('status','Sold')->count();
+        $user = Auth::user();
+        $role = strtolower($user->role->role_name ?? '');
 
-        $recentTransactions = Transaction::with('client.user','property','agent')->latest()->take(10)->get();
-        $topAgents = User::whereHas('transactions')->withCount('transactions')->orderByDesc('transactions_count')->take(5)->get();
-
-        return view('dashboard.index', compact('totalProperties','available','sold','recentTransactions','topAgents'));
+        return match ($role) {
+            'admin' => $this->showAdminDashboard(),
+            'sales manager' => $this->showManagerDashboard(),
+            'agent' => $this->showAgentDashboard(),
+            'client' => $this->showClientDashboard(),
+            default => abort(403, 'Unauthorized role access.'),
+        };
     }
 
-    public function store(Request $request) {
+    public function showAdminDashboard()
+    {
+        $totalProperties = Property::count();
+        $available = Property::where('status', 'Available')->count();
+        $sold = Property::where('status', 'Sold')->count();
+        $totalUsers = User::count();
+        $recentTransactions = Transaction::with(['client.user', 'property', 'agent'])->latest()->take(10)->get();
+
+        return view('dashboard.admin', compact(
+            'totalProperties',
+            'available',
+            'sold',
+            'totalUsers',
+            'recentTransactions'
+        ));
+    }
+
+    public function showManagerDashboard()
+    {
+        $manager = Auth::user();
+
+        $totalAgents = User::whereHas('role', fn($q) => $q->where('role_name', 'Agent'))->count();
+        $activeQuotas = Quota::where('manager_id', $manager->user_id)->count();
+        $totalSales = Transaction::whereHas('agent', function ($q) use ($manager) {
+            $q->where('assigned_manager', $manager->user_id);
+        })->sum('total_amount');
+
+        $topAgents = User::whereHas('transactions')
+            ->withCount('transactions')
+            ->orderByDesc('transactions_count')
+            ->take(5)
+            ->get();
+
+        return view('dashboard.manager', compact(
+            'totalAgents',
+            'activeQuotas',
+            'totalSales',
+            'topAgents'
+        ));
+    }
+
+    public function showAgentDashboard()
+    {
+        $agent = Auth::user();
+
+        $assignedProperties = $agent->propertiesAssigned()->count();
+        $activeTransactions = Transaction::where('agent_id', $agent->user_id)->count();
+        $pendingApprovals = Transaction::where('agent_id', $agent->user_id)
+            ->where('status', 'Pending')
+            ->count();
+        $totalCommission = Commission::where('agent_id', $agent->user_id)
+            ->where('approval_status', 'approved')
+            ->sum('amount');
+
+        $recentTransactions = Transaction::with(['client.user', 'property'])
+            ->where('agent_id', $agent->user_id)
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('dashboard.agent', compact(
+            'assignedProperties',
+            'activeTransactions',
+            'pendingApprovals',
+            'totalCommission',
+            'recentTransactions'
+        ));
+    }
+
+    public function showClientDashboard()
+    {
+        $client = Auth::user();
+
+        $transactions = Transaction::with(['property', 'agent'])
+            ->where('client_id', optional($client->client)->client_id)
+            ->get();
+
+        $totalSpent = $transactions->sum('total_amount');
+        $activeTransactions = $transactions->where('status', 'Approved')->count();
+        $completedTransactions = $transactions->where('status', 'Completed')->count();
+
+        $recentPayments = Payment::whereIn('transaction_id', $transactions->pluck('transaction_id'))
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('dashboard.client', compact(
+            'transactions',
+            'totalSpent',
+            'activeTransactions',
+            'completedTransactions',
+            'recentPayments'
+        ));
+    }
+
+    public function store(Request $request)
+    {
         $request->validate([
             'amount' => 'required|numeric|min:0.01',
-            'transaction_id' => 'required|exists:transactions,id'
+            'transaction_id' => 'required|exists:transactions,transaction_id',
         ]);
 
         $transaction = Transaction::findOrFail($request->transaction_id);
+
         if ($transaction->status !== 'Approved') {
-            return back()->withErrors(['transaction_id'=>'Payments can only be made for approved transactions.'])->withInput();
+            return back()->withErrors([
+                'transaction_id' => 'Payments can only be made for approved transactions.'
+            ])->withInput();
         }
-        
-        $payment = new Payment;
-        $payment->transaction_id = $transaction->id;
-        $payment->amount = $request->amount;
-        $payment->payment_date = now();
-        $payment->received_by = Auth::id();
-        $payment->save();
+
+        $payment = Payment::create([
+            'transaction_id' => $transaction->transaction_id,
+            'amount' => $request->amount,
+            'payment_date' => now(),
+            'status' => 'Completed',
+            'balance' => max(0, $transaction->property->price - $transaction->payments()->sum('amount') - $request->amount),
+        ]);
 
         $totalPaid = $transaction->payments()->sum('amount');
         if ($totalPaid >= $transaction->property->price) {
-            $transaction->status = 'Completed';
-            $transaction->save();
+            $transaction->update(['status' => 'Completed']);
         }
 
-        return redirect()->back()->with('success','Payment recorded successfully.');
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'add_payment',
+            'target_table' => 'payments',
+            'target_id' => $payment->id,
+            'remarks' => 'Payment of ₱' . number_format($payment->amount, 2) . ' recorded for Transaction #' . $transaction->transaction_id,
+        ]);
+
+        return redirect()->back()->with('success', 'Payment recorded successfully.');
     }
 }

@@ -12,55 +12,68 @@ use App\Http\Controllers\AgentController;
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\QuotaController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\AuditController;
 
-Route::get("/", [AuthController::class, 'showLogin'])->name('login');
-Route::get("/login", [AuthController::class, 'showLogin'])->name('login');
-Route::get("/login", [AuthController::class, 'login'])->name('login.post');
-Route::get("/register", [AuthController::class, 'showRegister'])->name('register');
-Route::get("/register", [AuthController::class, 'register'])->name('register.post');
-Route::get("/logout", [AuthController::class, 'logout'])->name('logout');
+Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware(['auth'])->group(function(){
+Route::middleware(['auth'])->group(function () {
 
-    Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
-    // Properties
-    Route::get('/properties',[PropertyController::class,'index'])->name('properties.index');
-    Route::get('/properties/create',[PropertyController::class,'create'])->name('properties.create');
-    Route::post('/properties',[PropertyController::class,'store'])->name('properties.store');
-    Route::get('/properties/{property}',[PropertyController::class,'show'])->name('properties.show');
+    Route::middleware('role:Admin')->get('/dashboard/admin', [DashboardController::class, 'showAdminDashboard'])->name('dashboard.admin');
+    Route::middleware('role:Sales Manager')->get('/dashboard/manager', [DashboardController::class, 'showManagerDashboard'])->name('dashboard.manager');
+    Route::middleware('role:Agent')->get('/dashboard/agent', [DashboardController::class, 'showAgentDashboard'])->name('dashboard.agent');
+    Route::middleware('role:Client')->get('/dashboard/client', [DashboardController::class, 'showClientDashboard'])->name('dashboard.client');
 
-    // Transactions
-    Route::get('/transactions',[TransactionController::class,'index'])->name('transactions.index');
-    Route::get('/transactions/create',[TransactionController::class,'create'])->name('transactions.create');
-    Route::post('/transactions',[TransactionController::class,'store'])->name('transactions.store');
-    Route::get('/transactions/{transaction}',[TransactionController::class,'show'])->name('transactions.show');
-    Route::post('/transactions/{transaction}/approve',[TransactionController::class,'approve'])->name('transactions.approve');
-    Route::post('/transactions/{transaction}/cancel',[TransactionController::class,'cancel'])->name('transactions.cancel');
+    Route::middleware('role:Admin,Sales Manager')->group(function () {
+        Route::resource('properties', PropertyController::class)->except(['show']);
+    });
 
-    // Payments
-    Route::get('/payments',[PaymentController::class,'index'])->name('payments.index');
-    Route::post('/payments',[PaymentController::class,'store'])->name('payments.store');
+    Route::get('/properties/{property}', [PropertyController::class, 'show'])
+        ->middleware('auth')
+        ->name('properties.show');
 
-    // Commissions
-    Route::get('/commissions',[CommissionController::class,'index'])->name('commissions.index');
-    Route::post('/commissions/{commission}/approve',[CommissionController::class,'approve'])->name('commissions.approve');
+    Route::middleware('role:Agent,Client,Sales Manager,Admin')->group(function () {
+        Route::resource('transactions', TransactionController::class)->except(['edit', 'update', 'destroy']);
+        Route::post('/transactions/{transaction}/approve', [TransactionController::class, 'approve'])->name('transactions.approve');
+        Route::post('/transactions/{transaction}/cancel', [TransactionController::class, 'cancel'])->name('transactions.cancel');
+    });
 
-    // Developers
-    Route::resource('developers', DeveloperController::class);
+    Route::middleware('role:Agent,Sales Manager')->group(function () {
+        Route::resource('payments', PaymentController::class)->except(['show']);
+    });
 
-    // Clients and Agents
-    Route::get('/clients',[ClientController::class,'index'])->name('clients.index');
-    Route::get('/clients/{client}',[ClientController::class,'show'])->name('clients.show');
+    Route::middleware('role:Sales Manager,Admin')->group(function () {
+        Route::resource('commissions', CommissionController::class);
+        Route::post('/commissions/{commission}/approve', [CommissionController::class, 'approve'])->name('commissions.approve');
+        Route::post('/commissions/{commission}/reject', [CommissionController::class, 'reject'])->name('commissions.reject');
+    });
 
-    Route::get('/agents',[AgentController::class,'index'])->name('agents.index');
+    Route::middleware('role:Admin')->resource('developers', DeveloperController::class);
 
-    // Reports
-    Route::get('/reports',[ReportController::class,'index'])->name('reports.index');
-    Route::post('/reports/generate',[ReportController::class,'generate'])->name('reports.generate');
+    Route::middleware('role:Admin,Sales Manager')->group(function () {
+        Route::resource('clients', ClientController::class)->except(['destroy']);
+        Route::resource('agents', AgentController::class)->except(['destroy']);
+    });
 
-    // Notifications
-    Route::get('/notifications',[NotificationController::class,'index'])->name('notifications.index');
-    Route::post('/notifications/{notification}/read',[NotificationController::class,'markRead'])->name('notifications.read');
+    Route::middleware('role:Admin,Sales Manager')->group(function () {
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
+    });
 
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+
+    Route::middleware('role:Sales Manager,Admin')->resource('quotas', QuotaController::class);
+
+    Route::middleware('role:Sales Manager,Admin')->resource('teams', TeamController::class);
+
+    Route::middleware('role:Admin')->get('/audits', [AuditController::class, 'index'])->name('audits.index');
 });
