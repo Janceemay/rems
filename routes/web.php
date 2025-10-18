@@ -16,7 +16,10 @@ use App\Http\Controllers\QuotaController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\AuditController;
 
-Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/', function(){
+    return view('index');
+});
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
