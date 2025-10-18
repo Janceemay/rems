@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K. Palafox Realty</title>
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body class="bg-gradient-to-b from-sky-100 to-sky-300">
     {{-- Wrapper --}}
     <div>
-
         {{-- Header --}}
         <header class="text-black p-6">
             <div class="max-w-7xl mx-auto flex justify-between items-center gap-8">
@@ -23,6 +22,7 @@
                     <a href="#home" class="hover:underline">Home</a>
                     <a href="#about" class="hover:underline">About</a>
                     <a href="#developers" class="hover:underline">Developers</a>
+                    <a href="#property" class="hover:underline">Property</a>
                     <a href="#location" class="hover:underline">Location</a>
                 </nav>
 
@@ -37,13 +37,13 @@
         </header>
 
         {{-- Page Content --}}
-        <main>
+        <main class="">
             @yield('content')
         </main>
 
         {{-- Footer --}}
         <footer class="text-black p-6">
-            <div class="max-w-7xl mx-auto flex flex-wrap justify-between gap-8">
+            <div class="max-w-7xl mx-auto flex flex-nowrap justify-between gap-8">
 
                 {{-- Logo --}}
                 <div class="w-full sm:w-1/2 md:w-1/4">
