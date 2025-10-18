@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K. Palafox Realty</title>
+    {{-- Vite --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Swiper CSS --}}
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css"/> --}}
+    {{-- Flowbite CSS --}}
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"/> --}}
+
 </head>
 <body class="bg-gradient-to-b from-sky-100 to-sky-300">
     {{-- Header & Hero --}}
-    <section id="home" class="h-screen flex flex-col  bg-[url('/images/Home_Background.jpg')] bg-cover bg-center bg-no-repeat bg-blend-multiply text-center text-black">
-
+    <section id="home" class="h-screen flex flex-col bg-[url('/images/Home_Background.jpg')] bg-cover bg-center bg-no-repeat bg-blend-multiply text-center text-black">
         <header class="h-20 p-6">
             <div class="max-w-7xl mx-auto flex justify-between items-center gap-8">
                 {{-- Logo   --}}
@@ -50,7 +55,6 @@
             </div>
         </div>
     </section>
-
 
     {{-- About Section --}}
     <section id="about" class="h-screen flex flex-col items-center justify-center p-8 gap-8 max-w-7xl mx-auto">
@@ -95,125 +99,243 @@
         <div class="w-full gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
             {{-- Block 1: Atlanta Realty --}}
             <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
-                <div class="flex sm:flex-col md:flex-row lg:flex-col w-full mb-2">
+                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
                     <img src="/images/logos/Atlanta_Realty_Logo.png" alt="Atlanta Realty Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
                     <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Atlanta Realty</h1>
                 </div>
                 <p class="text-start">Atlanta Realty is known for its innovative designs and quality construction, offering a variety of residential properties that cater to different lifestyles.</p>
             </a>
+            {{-- Block 2: Ayala Land --}}
+            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                    <img src="/images/logos/Ayala_Logo.png" alt="Ayala Land Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Ayala Land</h1>
+                </div>
+                <p class="text-start">Ayala Land is one of the largest and most established real estate developers in the Philippines, known for its master-planned communities and sustainable developments.</p>
+            </a>
+            {{-- Block 3: Borland --}}
+            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                    <img src="/images/logos/Borland_Logo.png" alt="Borland Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Borland</h1>
+                </div>
+                <p class="text-start">Borland is recognized for its commitment to quality and customer satisfaction, offering a range of residential properties that combine modern living with affordability.</p>
+            </a>
+            {{-- Block 4: Century Properties --}}
+            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                    <img src="/images/logos/Century_Properties_Logo.png" alt="Century Properties Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Century Properties</h1>
+                </div>
+                <p class="text-start">Century Properties is known for its innovative designs and quality construction, offering a variety of residential properties that cater to different lifestyles.</p>
+            </a>
+            {{-- Block 5: ServeQuest Group --}}
+            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                    <img src="/images/logos/ServeQuest_Group_Logo.png" alt="ServeQuest Group Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">ServeQuest Group</h1>
+                </div>
+                <p class="text-start">ServeQuest Group has built a reputation for delivering quality homes and excellent customer service, with a focus on creating vibrant communities.</p>
+            </a>
+            {{-- Block 6: Vista Land --}}
+            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                    <img src="/images/logos/Vista_Land_Logo.png" alt="Vista Land Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Vista Land</h1>
+                </div>
+                <p class="text-start">Vista Land is one of the largest homebuilders in the Philippines, known for its diverse portfolio of residential developments that cater to various market segments.</p>
+            </a>
         </div>
     </section>
 
-    {{-- <section class="w-full gap-4 grid grid-cols-3 grid-rows-3 justify-center items-center text-center" id="developers">
-        <a href="/" class="block w-full">
-            <div class="bg-white border-2 border-gray-300 rounded-lg p-4 w-full h-full hover:shadow-lg transition-shadow duration-300">
-                <h1 class="text-4xl font-bold">Atlanta Realty</h1>
-                <div>
-                    <img src="images/logos/Atlanta_Realty_Logo.png" alt="Atlanta Logo" class="w-24 h-auto mb-2">
-                    <p>The quick brown fox jumps over the lazy dog the quick...</p>
+    <!-- Property Section -->
+    <section id="property" class="h-screen flex flex-col items-center justify-center p-8 gap-8 max-w-7xl mx-auto">
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-center mb-4">Property Type</h1>
+        <p class="text-lg md:text-xl lg:text-2xl text-center max-w-3xl mx-auto mb-8">
+            Explore a variety of property types to find the perfect home that suits your lifestyle and preferences.
+        </p>
+        <div class="relative w-full max-w-6xl overflow-hidden px-4">
+            <div class="swiper w-full">
+                <div class="swiper-wrapper">
+                    <!-- Slide 1 -->
+                    <div class="swiper-slide">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                            <img src="/images/logos/Ayala_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="Ayala">
+                            <span class="text-lg font-medium text-gray-800">Ayala Land</span>
+                        </div>
+                    </div>
+                    <!-- Slide 2 -->
+                    <div class="swiper-slide">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                            <img src="/images/logos/Century_Properties_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="Century">
+                            <span class="text-lg font-medium text-gray-800">Century Properties</span>
+                        </div>
+                    </div>
+                    <!-- Slide 3 -->
+                    <div class="swiper-slide">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                            <img src="/images/logos/Vista_Land_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="Vista">
+                            <span class="text-lg font-medium text-gray-800">Vista Land</span>
+                        </div>
+                    </div>
+                    <!-- Slide 4 -->
+                    <div class="swiper-slide">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                            <img src="/images/logos/Atlanta_Realty_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="Atlanta">
+                            <span class="text-lg font-medium text-gray-800">Atlanta Realty</span>
+                        </div>
+                    </div>
+                    <!-- Slide 5 -->
+                    <div class="swiper-slide">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                            <img src="/images/logos/Borland_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="Borland">
+                            <span class="text-lg font-medium text-gray-800">Borland</span>
+                        </div>
+                    </div>
+                    <!-- Slide 6 -->
+                    <div class="swiper-slide">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                            <img src="/images/logos/ServeQuest_Group_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="ServeQuest">
+                            <span class="text-lg font-medium text-gray-800">ServeQuest Group</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </a>
-        <div class="bg-white border-2 border-gray-300 rounded-lg p-4 w-full">
-            <h1 class="text-4xl font-bold">Ayala</h1>
-            <div class="">
-                <div class="">
-                    <a href="" class="">
-                        <img src="images/logos/Ayala_Logo.png" alt="Ayala Logo" class="md:size-1/4 lg:size-1/2 object-contain">
-                    </a>
-                    <p>The quick brown fox jumps over the lazy dog the quick...</p>
+                <!-- Navigation buttons -->
+                <div class="swiper-button-prev absolute top-1/2 left-0 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-full shadow hover:bg-blue-100 hover:text-blue-700 transition duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
                 </div>
-            </div>
-        </div>
-        <div class="bg-white border-2 border-gray-300 rounded-lg p-4 w-full">
-            <h1 class="text-4xl font-bold">Borland</h1>
-            <div class="">
-                <div class="">
-                    <a href="" class="">
-                        <img src="images/logos/Borland_Logo.png" alt="Borland Logo" class="">
-                    </a>
-                    <p>The quick brown fox jumps over the lazy dog the quick...</p>
+                <div class="swiper-button-next absolute top-1/2 right-0 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-full shadow hover:bg-blue-100 hover:text-blue-700 transition duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                 </div>
-            </div>
-        </div>
-        <div class="bg-white border-2 border-gray-300 rounded-lg p-4 w-full">
-            <h1 class="text-4xl font-bold">Century Properties</h1>
-            <div class="">
-                <div class="">
-                    <a href="" class="">
-                        <img src="images/logos/Century_Properties_Logo.png" alt="Century Properties Logo" class="">
-                    </a>
-                    <p>The quick brown fox jumps over the lazy dog the quick...</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white border-2 border-gray-300 rounded-lg p-4 w-full">
-            <h1 class="text-4xl font-bold">ServeQuest Group</h1>
-            <div class="">
-                <div class="">
-                    <a href="" class="">
-                        <img src="images/logos/ServeQuest_Group_Logo.png" alt="ServeQuest Group Logo" class="">
-                    </a>
-                    <p>The quick brown fox jumps over the lazy dog the quick...</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white border-2 border-gray-300 rounded-lg p-4 w-full">
-            <h1 class="text-4xl font-bold">Vista Land</h1>
-            <div class="">
-                <div class="">
-                    <a href="" class="">
-                        <img src="images/logos/Vista_Land_Logo.png" alt="Vista Land Logo" class="">
-                    </a>
-                    <p>The quick brown fox jumps over the lazy dog the quick...</p>
-                </div>
-            </div>
-        </div>
-    </section> --}}
-    {{-- Property Section --}}
 
-    <section class="" id=property>
-        <div class="">
-            <h2>Property Type</h2>
-            <div class="">
-                <a href="luxury-homes.html" class="">
-                    <div class="">
-                        <i class=""></i>
-                        <h3>Luxury Homes</h3>
-                    </div>
-                </a>
-                <!-- repeat other property types -->
+                <!-- Pagination dots -->
+                <div class="swiper-pagination mt-6 flex justify-center gap-2"></div>
             </div>
         </div>
     </section>
-    {{-- Location and FAQ Section --}}
-    <section class="" id="location">
-        <div class="">
-            <div class="">
-                <div class="">
-                    <img src="images/K._Palafox_Realty_Map_Location.png" alt="City Map" style="width:100%; height:400px;">
+
+{{-- Location & FAQ Section --}}
+<section id="location" class="h-screen flex flex-col items-center justify-center p-8 gap-8 max-w-7xl mx-auto">
+    <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-center mb-4">Location & FAQ</h1>
+    <p class="text-lg md:text-xl lg:text-2xl text-center max-w-3xl mx-auto mb-8">
+        Discover our location and frequently asked questions.
+    </p>
+
+    <div class="w-full flex flex-col lg:flex-row gap-8 justify-center items-start">
+        <!-- Map -->
+        <div class="flex-1">
+            <img src="images/K._Palafox_Realty_Map_Location.png" alt="City Map"
+                 class="w-full h-[400px] object-cover rounded-2xl shadow-md">
+        </div>
+
+        <!-- FAQ Accordion (Flowbite) -->
+        <div class="flex-1">
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-6">Frequently Asked Questions</h2>
+
+            <div id="accordion-open" data-accordion="open">
+                <!-- FAQ 1 -->
+                <h2 id="faq-heading-1">
+                    <button type="button"
+                        class="flex items-center justify-between w-full p-5 font-medium text-gray-700 border border-b-0 rounded-t-xl hover:bg-gray-100"
+                        data-accordion-target="#faq-body-1" aria-expanded="true" aria-controls="faq-body-1">
+                        <span>Where is K. Palafox Realty located?</span>
+                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M9 5 5 1 1 5" />
+                        </svg>
+                    </button>
+                </h2>
+                <div id="faq-body-1" class="hidden" aria-labelledby="faq-heading-1">
+                    <div class="p-5 border border-b-0 text-gray-600">
+                        We are located at [Insert complete address here]. You can find us easily on Google Maps.
+                    </div>
                 </div>
-                <div class="">
-                    <h2>Frequently Asked Questions</h2>
-                    <div class="">
-                        <h3>Question 1</h3>
+
+                <!-- FAQ 2 -->
+                <h2 id="faq-heading-2">
+                    <button type="button"
+                        class="flex items-center justify-between w-full p-5 font-medium text-gray-700 border border-b-0 hover:bg-gray-100"
+                        data-accordion-target="#faq-body-2" aria-expanded="false" aria-controls="faq-body-2">
+                        <span>What are your business hours?</span>
+                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M9 5 5 1 1 5" />
+                        </svg>
+                    </button>
+                </h2>
+                <div id="faq-body-2" class="hidden" aria-labelledby="faq-heading-2">
+                    <div class="p-5 border border-b-0 text-gray-600">
+                        We are open Monday to Saturday, from 8:00 AM to 6:00 PM.
                     </div>
-                    <div class="">
-                        <h3>Question 2</h3>
+                </div>
+
+                <!-- FAQ 3 -->
+                <h2 id="faq-heading-3">
+                    <button type="button"
+                        class="flex items-center justify-between w-full p-5 font-medium text-gray-700 border border-b-0 hover:bg-gray-100"
+                        data-accordion-target="#faq-body-3" aria-expanded="false" aria-controls="faq-body-3">
+                        <span>Do you offer property consultations?</span>
+                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M9 5 5 1 1 5" />
+                        </svg>
+                    </button>
+                </h2>
+                <div id="faq-body-3" class="hidden" aria-labelledby="faq-heading-3">
+                    <div class="p-5 border border-b-0 text-gray-600">
+                        Yes, we provide free consultations for property buying, selling, and investment planning.
                     </div>
-                    <div class="">
-                        <h3>Question 3</h3>
+                </div>
+
+                <!-- FAQ 4 -->
+                <h2 id="faq-heading-4">
+                    <button type="button"
+                        class="flex items-center justify-between w-full p-5 font-medium text-gray-700 border border-b-0 hover:bg-gray-100"
+                        data-accordion-target="#faq-body-4" aria-expanded="false" aria-controls="faq-body-4">
+                        <span>Can I schedule a property viewing online?</span>
+                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M9 5 5 1 1 5" />
+                        </svg>
+                    </button>
+                </h2>
+                <div id="faq-body-4" class="hidden" aria-labelledby="faq-heading-4">
+                    <div class="p-5 border border-b-0 text-gray-600">
+                        Yes! You can schedule a property viewing through our website or by contacting us directly.
                     </div>
-                    <div class="">
-                        <h3>Question 4</h3>
-                    </div>
-                    <div class="">
-                        <h3>Question 5</h3>
+                </div>
+
+                <!-- FAQ 5 -->
+                <h2 id="faq-heading-5">
+                    <button type="button"
+                        class="flex items-center justify-between w-full p-5 font-medium text-gray-700 border hover:bg-gray-100"
+                        data-accordion-target="#faq-body-5" aria-expanded="false" aria-controls="faq-body-5">
+                        <span>Do you assist with property financing?</span>
+                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M9 5 5 1 1 5" />
+                        </svg>
+                    </button>
+                </h2>
+                <div id="faq-body-5" class="hidden" aria-labelledby="faq-heading-5">
+                    <div class="p-5 border border-t-0 text-gray-600">
+                        Yes, we can connect you with trusted financial institutions for home loans and financing options.
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
     </main>
     {{-- Footer --}}
     <footer class="text-black p-6">
@@ -262,5 +384,40 @@
             <p>© 2025 K. Palafox Realty. All rights reserved.</p>
         </div>
     </footer>
+
+    {{-- Swiper JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script>
+        const swiper = new Swiper('.swiper', {
+            loop: true
+            , centerdSlides: true
+            , spaceBetween: 50
+            , slidesPerView: 3
+            , breakpoints: {
+                640: {
+                    slidesPerView: 1
+                , }
+                , 768: {
+                    slidesPerView: 2
+                , }
+                , 1024: {
+                    slidesPerView: 3
+                , }
+            , }
+            , navigation: {
+                nextEl: '.swiper-button-next'
+                , prevEl: '.swiper-button-prev'
+            , },
+
+            pagination: {
+                el: '.swiper-pagination'
+                , clickable: true
+            , }
+        , });
+
+    </script>
+
+<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
 </body>
 </html>
