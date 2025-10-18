@@ -175,4 +175,19 @@ class ReportController extends Controller {
             abort(403, 'Unauthorized action.');
         }
     }
+
+    public function exportTransactions(Request $request)
+    {
+        $format = $request->input('format', 'xlsx');
+        $fileName = 'transactions_report_' . now()->format('Y_m_d_His') . '.' . $format;
+
+        Report::create([
+            'type' => 'Transactions',
+            'period' => now()->format('Y-m-d'),
+            'file_path' => 'exports/' . $fileName,
+            'generated_by' => Auth::id(),
+        ]);
+
+        return Excel::download(new TransactionsExport, $fileName);
+    }
 }
