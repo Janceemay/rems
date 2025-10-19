@@ -15,11 +15,12 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QuotaController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\AuditController;
+use App\Http\Controllers\ManagerController;
 
-Route::get('/', function(){
+// temporary route for welcome page
+Route::get('/', function () {
     return view('index');
 });
-
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -73,6 +74,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+
+    // profile viewing
+    Route::get('/client/profile', [ClientController::class, 'profile'])->name('client.profile');
+    Route::post('/client/profile/update', [ClientController::class, 'updateProfile'])->name('profile.update');
+
+    Route::get('/agent/profile', [AgentController::class, 'profile'])->name('agent.profile');
+    Route::post('/agent/profile/update', [AgentController::class, 'updateProfile'])->name('agent.update');
+
+    Route::get('/manager/profile', [ManagerController::class, 'profile'])->name('profiles.manager');
+    Route::post('/manager/profile/update', [ManagerController::class, 'updateProfile'])->name('manager.update');
 
     Route::middleware('role:Sales Manager,Admin')->resource('quotas', QuotaController::class);
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\{Property, Transaction, User, Payment, Commission, Team, Quota, AuditLog};
+use App\Models\{Property, Transaction, User, Payment, Commission, Team, Quota, AuditLog, Agent};
 
 class DashboardController extends Controller {
     public function index() {
@@ -40,11 +40,20 @@ class DashboardController extends Controller {
     public function showManagerDashboard()
     {
         $manager = Auth::user();
+        
+        $pending = Transaction::where('status', 'Pending')
+            ->count();
+
+        $ongoing = Transaction::where('status', 'Ongoing')
+            ->count();
+
+        $completed = Transaction::where('status', 'Completed')
+            ->count();
 
         $totalAgents = User::whereHas('role', fn($q) => $q->where('role_name', 'Agent'))->count();
         $activeQuotas = Quota::where('manager_id', $manager->user_id)->count();
         $totalSales = Transaction::whereHas('agent', function ($q) use ($manager) {
-            $q->where('assigned_manager', $manager->user_id);
+            $q->where('transaction_id', $manager->user_id);
         })->sum('total_amount');
 
         $topAgents = User::whereHas('transactions')
@@ -53,11 +62,37 @@ class DashboardController extends Controller {
             ->take(5)
             ->get();
 
+        $members = Agent::where('manager_id', $manager->user_id)
+            ->orderByRaw("CASE WHEN rank = 'Top Selling Agent' THEN 0 ELSE 1 END")
+            ->orderBy('commission', 'desc')
+            ->get();
+
+        Agent::query()->update(['rank' => '']);
+
+        $topAgent = Agent::orderBy('commission', 'desc')->first();
+
+        if ($topAgent) {
+            $topAgent->update(['rank' => 'Top Selling Agent']);
+        }
+
+        foreach ($members as $member) {
+            $info = User::find($member->user_id);
+            $members->full_name = $info->full_name;
+        }
+
+        $topselling = $topAgent;
+
+
         return view('dashboard.manager', compact(
             'totalAgents',
             'activeQuotas',
             'totalSales',
-            'topAgents'
+            'topAgents',
+            'pending',
+            'ongoing',
+            'completed',
+            'members',
+            'topselling'
         ));
     }
 
@@ -106,12 +141,30 @@ class DashboardController extends Controller {
             ->take(5)
             ->get();
 
+        // Assume client is paying for one active property
+        $activeTransaction = $transactions->firstWhere('status', 'Approved');
+        $property = $activeTransaction?->property;
+
+        $propertyPrice = $property?->price ?? 0;
+        $totalPaid = $activeTransaction
+            ? Payment::where('transaction_id', $activeTransaction->transaction_id)->sum('amount_paid')
+            : 0;
+        $totalBalance = max(0, $propertyPrice - $totalPaid);
+
+        $paidPercent = $propertyPrice > 0 ? round(($totalPaid / $propertyPrice) * 100) : 0;
+        $balancePercent = 100 - $paidPercent;
+
         return view('dashboard.client', compact(
             'transactions',
             'totalSpent',
             'activeTransactions',
             'completedTransactions',
-            'recentPayments'
+            'recentPayments',
+            'property',
+            'totalPaid',
+            'totalBalance',
+            'paidPercent',
+            'balancePercent'
         ));
     }
 

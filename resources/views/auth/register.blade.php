@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('components.layouts.app')
 
 @section('content')
-<div class="row justify-content-center">
+<div class="row justify-content-end">
     <div class="col-md-6">
         <h3>Register</h3>
         <form method="POST" action="{{ route('register.post') }}">

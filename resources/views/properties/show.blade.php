@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('components.layouts.app')
 
 @section('content')
 <h3>{{ $property->title ?? $property->property_code }}</h3>

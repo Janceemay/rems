@@ -119,4 +119,47 @@ class ClientController extends Controller {
             abort(403, 'Unauthorized action.');
         }
     }
+
+    public function profile()
+    {
+        $user = Auth::user();
+
+        if (!$user->isRole('Client')) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        return view('clients.profile', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:11',
+            'age' => 'required|integer',
+            'profile_picture' => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $user->profile_picture = '/storage/' . $path;
+        }
+
+        $user->contact_number = $request->phone;
+        $user->age = $request->age;
+        $user->full_name = $request->name;
+        $user->save();
+
+        AuditLog::create([
+            'user_id' => $user->user_id,
+            'action' => 'update',
+            'target_table' => 'users',
+            'target_id' => $user->user_id,
+            'remarks' => "Client profile updated by {$user->full_name}",
+        ]);
+
+        return redirect()->route('client.profile')->with('success', 'Profile updated successfully.');
+    }
 }

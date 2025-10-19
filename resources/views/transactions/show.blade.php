@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('components.layouts.app')
 
 @section('content')
 <h3>Transaction #{{ $transaction->transaction_id }}</h3>

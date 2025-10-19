@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K. Palafox Realty</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite('resources/css/app.css')
 </head>
-<body class="bg-gradient-to-b from-sky-100 to-sky-300">
+<body>
     {{-- Wrapper --}}
     <div>
+
         {{-- Header --}}
         <header class="text-black p-6">
             <div class="max-w-7xl mx-auto flex justify-between items-center gap-8">
                 {{-- Logo --}}
                 <div class="flex-shrink-0">
-                    <img src="/images/logos/KPR_logo.png" alt="Logo" class="h-12 w-auto">
+                    <img src="/images/K._Palafox_Realty_Full_Logo.png" alt="Logo" class="h-12 w-auto">
                 </div>
 
                 {{-- Navigation --}}
@@ -22,32 +23,33 @@
                     <a href="#home" class="hover:underline">Home</a>
                     <a href="#about" class="hover:underline">About</a>
                     <a href="#developers" class="hover:underline">Developers</a>
-                    <a href="#property" class="hover:underline">Property</a>
                     <a href="#location" class="hover:underline">Location</a>
                 </nav>
 
                 {{-- Buttons --}}
                 <div class="flex gap-3 ml-4">
-                    <button type="button" onclick="window.location.href='{{ route('login') }}'" class="text-black bg-white border border-gray-200 rounded-lg text-sm text-center p-2">
+                    <a class="button" href="{{ route('login') }}"> Logins</a>
+                    <!-- <button type="button" onclick="window.location.href='{{ route('login') }}'" class="text-black bg-white border border-gray-200 rounded-lg text-sm text-center p-2">
                         Log In
-                    </button>
-                    <button type="button"  onclick="window.location.href='{{ route('register') }}'" class="text-white bg-blue-500 border border-gray-200 rounded-lg text-sm text-center p-2">Sign Up</button>
+                    </button> -->
+                     <a class="button" href="{{ route('register') }}"> Logins</a>
+                    
                 </div>
             </div>
         </header>
 
         {{-- Page Content --}}
-        <main class="">
-            @yield('content')
+        <main>
+            {{ $slot }}
         </main>
 
         {{-- Footer --}}
         <footer class="text-black p-6">
-            <div class="max-w-7xl mx-auto flex flex-nowrap justify-between gap-8">
+            <div class="max-w-7xl mx-auto flex flex-wrap justify-between gap-8">
 
                 {{-- Logo --}}
                 <div class="w-full sm:w-1/2 md:w-1/4">
-                    <img src="/images/logos/KPR_logo.png" class="size-" alt="Logo">
+                    <img src="/images/K._Palafox_Realty_Full_Logo.png" alt="Logo">
                     <address>Papaya Road, Mabini Homesite, Cabanatuan City Nueva Ecija 3100 Philippines</address>
                 </div>
 
