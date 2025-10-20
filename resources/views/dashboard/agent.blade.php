@@ -19,6 +19,7 @@
         <ul class="space-y-4">
           <li><a class="text-black no-underline" href="{{ route('profiles.agent') }}">My Profile</a></li>
           <li><a class="text-black no-underline" href="{{ route('dashboard.agent') }}">Dashboard</a></li>
+          <li><a class="text-black no-underline" href="{{ route('properties.index') }}">Housing</a></li>
           <li>
             <form action="{{ route('logout') }}" method="POST">
               @csrf

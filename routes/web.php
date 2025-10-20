@@ -21,6 +21,7 @@ use App\Http\Controllers\ManagerController;
 Route::get('/', function () {
     return view('index');
 });
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -40,9 +41,20 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('properties', PropertyController::class)->except(['show']);
     });
 
-    Route::get('/properties/{property}', [PropertyController::class, 'show'])
-        ->middleware('auth')
-        ->name('properties.show');
+    Route::middleware('role:Admin,Sales Manager')->group(function () {
+        Route::get('/properties/create', [PropertyController::class, 'create'])->name('properties.create');
+        Route::post('/properties', [PropertyController::class, 'store'])->name('properties.store');
+        Route::get('/properties/{property}/edit', [PropertyController::class, 'edit'])->name('properties.edit');
+        Route::put('/properties/{property}', [PropertyController::class, 'update'])->name('properties.update');
+        Route::delete('/properties/{property}', [PropertyController::class, 'destroy'])->name('properties.destroy');
+    });
+
+    Route::middleware(['auth', 'role:Admin,Sales Manager'])->group(function () {
+        Route::resource('agents', AgentController::class);
+    });
+
+    Route::get('/properties', [PropertyController::class, 'index'])->name('properties.index');
+    Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
 
     Route::middleware('role:Agent,Client,Sales Manager,Admin')->group(function () {
         Route::resource('transactions', TransactionController::class)->except(['edit', 'update', 'destroy']);
@@ -76,10 +88,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
 
     // profile viewing
-    Route::get('/client/profile', [ClientController::class, 'profile'])->name('client.profile');
-    Route::post('/client/profile/update', [ClientController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/profiles/client', [ClientController::class, 'profile'])->name('profiles.client');
+    Route::post('/client/profile/update', [ClientController::class, 'updateProfile'])->name('client.update');
 
-    Route::get('/agent/profile', [AgentController::class, 'profile'])->name('agent.profile');
+    Route::get('/agent/profile', [AgentController::class, 'profile'])->name('profiles.agent');
     Route::post('/agent/profile/update', [AgentController::class, 'updateProfile'])->name('agent.update');
 
     Route::get('/manager/profile', [ManagerController::class, 'profile'])->name('profiles.manager');

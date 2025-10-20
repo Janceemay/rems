@@ -80,7 +80,7 @@
         <button class="text-gray-500 hover:text-gray-700" onclick="document.getElementById('editProfileModal').classList.add('hidden')">×</button>
       </div>
       <div class="p-4">
-        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('agent.update') }}" method="POST" enctype="multipart/form-data">
           @csrf
           <div class="mb-4">
             <label for="profile_picture" class="block font-medium mb-1">Profile Picture</label>

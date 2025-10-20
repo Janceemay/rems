@@ -128,7 +128,7 @@ class ClientController extends Controller {
             abort(403, 'Unauthorized access.');
         }
 
-        return view('clients.profile', compact('user'));
+        return view('profiles.client', compact('user'));
     }
 
     public function updateProfile(Request $request)
@@ -147,6 +147,11 @@ class ClientController extends Controller {
             $user->profile_picture = '/storage/' . $path;
         }
 
+        if ($request->hasFile('image')) {
+            $data = $request->file('image')->store('properties', 'public');
+            $data = '/storage/' . $data;
+        }
+
         $user->contact_number = $request->phone;
         $user->age = $request->age;
         $user->full_name = $request->name;
@@ -160,6 +165,6 @@ class ClientController extends Controller {
             'remarks' => "Client profile updated by {$user->full_name}",
         ]);
 
-        return redirect()->route('client.profile')->with('success', 'Profile updated successfully.');
+        return redirect()->route('profiles.client')->with('success', 'Profile updated successfully.');
     }
 }

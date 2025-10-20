@@ -17,7 +17,7 @@
         <h5 class="fw-bold mb-4">K. Palafox Realty</h5>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('client.profile') }}">My Profile</a>
+                <a class="nav-link" href="{{ route('profiles.client') }}">My Profile</a>
             </li>
             <li class="nav-item mb-2">
               <a class="nav-link" href="">Home</a>
@@ -26,7 +26,7 @@
               <a class="nav-link active" href="{{ route('dashboard.client') }}">Dashboard</a>
             </li>
             <li class="nav-item mb-2">
-              <a class="nav-link" href="">Housing</a>
+              <a class="nav-link" href="{{ route('properties.index') }}">Housing</a>
             </li>
             <li class="nav-item mb-2">
               <a class="nav-link" href="">Message</a>
@@ -90,7 +90,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+          <form action="{{ route('client.update') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
               <label for="profile_picture" class="form-label">Profile Picture</label>

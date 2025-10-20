@@ -62,7 +62,8 @@ class DashboardController extends Controller {
             ->take(5)
             ->get();
 
-        $members = Agent::where('manager_id', $manager->user_id)
+        $members = Agent::with('user')
+            ->where('manager_id', $manager->user_id)
             ->orderByRaw("CASE WHEN rank = 'Top Selling Agent' THEN 0 ELSE 1 END")
             ->orderBy('commission', 'desc')
             ->get();
@@ -77,7 +78,9 @@ class DashboardController extends Controller {
 
         foreach ($members as $member) {
             $info = User::find($member->user_id);
-            $members->full_name = $info->full_name;
+            $member->full_name = $info->full_name;
+            $member->email = $info->email;
+            $member->profile_picture = $info->profile_picture;
         }
 
         $topselling = $topAgent;

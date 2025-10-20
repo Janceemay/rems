@@ -38,7 +38,6 @@
 <body>
   <div class="container-fluid p-4">
     <div class="row">
-
       <!-- Sidebar -->
       <div class="col-lg-2 col-md-3 bg-white p-3 border-end">
         <h5 class="fw-bold mb-4">K. Palafox Realty</h5>
@@ -46,7 +45,7 @@
           <li class="nav-item"><a class="nav-link" href="{{ route('profiles.manager') }}">My Profile</a></li>
           <li class="nav-item mb-2"><a class="nav-link" href="#">Home</a></li>
           <li class="nav-item mb-2"><a class="nav-link active" href="{{ route('dashboard.manager') }}">Dashboard</a></li>
-          <li class="nav-item mb-2"><a class="nav-link" href="#">Housing</a></li>
+          <li class="nav-item mb-2"><a class="nav-link" href="{{ route('properties.index') }}">Housing</a></li>
           <li class="nav-item mb-2"><a class="nav-link" href="#">Message</a></li>
           <li class="nav-item mb-2"><a class="nav-link" href="#">Bookmark</a></li>
           <li class="nav-item mt-4">
@@ -63,7 +62,6 @@
       <!-- Main Content -->
       <div class="col-md-10">
         <div class="dashboard-container">
-
           <!-- Team Status Section -->
           <div class="team-status">
             <h4 class="fw-bold mb-3">TEAM STATUS</h4>
@@ -106,13 +104,13 @@
               <div class="d-flex flex-column gap-3">
                 @forelse ($members as $member)
                   <div class="d-flex align-items-center p-2 border rounded-3">
-                    <img 
-                      src="{{ $member->profile_picture ?? 'https://via.placeholder.com/60' }}" 
+                    <img src="{{ $member->profile_picture ? asset($member->profile_picture) : asset('images/default-profile.jpg') }}" 
                       alt="Profile"
-                      class="rounded"
-                    >
+                      class="rounded-circle"
+                      style="width: 60px; height: 60px; object-fit: cover;" />
                     <div class="ms-3 text-start">
                       <strong>{{ $member->full_name }}</strong><br>
+                      <p>{{ $member->email }}</p>
                       <small class="text-muted">{{ $member->rank }}</small>
                     </div>
                   </div>
@@ -130,8 +128,7 @@
               </div>
             </div>
           </div>
-
-        </div> <!-- dashboard-container -->
+        </div>
       </div>
     </div>
   </div>

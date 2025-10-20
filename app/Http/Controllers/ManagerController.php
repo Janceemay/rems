@@ -43,6 +43,38 @@ class ManagerController extends Controller {
         return view('profiles.manager', compact('user'));
     }
 
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:11',
+            'age' => 'required|integer',
+            'profile_picture' => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $user->profile_picture = '/storage/' . $path;
+        }
+
+        $user->contact_number = $request->phone;
+        $user->age = $request->age;
+        $user->full_name = $request->name;
+        $user->save();
+
+        AuditLog::create([
+            'user_id' => $user->user_id,
+            'action' => 'update',
+            'target_table' => 'users',
+            'target_id' => $user->user_id,
+            'remarks' => "Your profile is successfully updated",
+        ]);
+
+        return redirect()->route('profiles.manager')->with('success', 'Profile updated successfully.');
+    }
+
     public function create()
     {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
