@@ -46,28 +46,26 @@ class PropertyController extends Controller {
         $developers = Developer::all();
         return view('properties.create', compact('developers'));
     }
-
+    
     public function store(Request $request) {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
         $validator = Validator::make($request->all(), (new StorePropertyRequest())->rules());
         $data = $validator->validate();
 
-        if (empty($data['property_code'])) {
-            $data['property_code'] = 'PROP-' . Str::upper(Str::random(6));
+        // Auto-generate property code
+        $lastProperty = Property::orderBy('property_id', 'desc')->first();
+        $nextNumber = ($lastProperty ? intval(str_replace('PROP-', '', $lastProperty->property_code)) : 0) + 1;
+        $data['property_code'] = 'PROP-' . $nextNumber;
+
+        $property = new Property($data);
+
+        if ($request->hasFile('image_url')) {
+            $path = $request->file('image_url')->store('properties', 'public');
+            $property->image_url = $path;
         }
 
-        if ($request->hasFile('image')) {
-            $data['image_url'] = $request->file('image')->store('properties', 'public');
-            $data['image_url'] = '/storage/' . $data['image_url'];
-        }
-
-        if ($request->hasFile('floor_plan')) {
-            $data['floor_plan'] = $request->file('floor_plan')->store('floorplans', 'public');
-            $data['floor_plan'] = '/storage/' . $data['floor_plan'];
-        }
-
-        $property = Property::create($data);
+        $property->save();
 
         AuditLog::create([
             'user_id' => Auth::id(),
@@ -80,19 +78,25 @@ class PropertyController extends Controller {
         return redirect()->route('properties.index')->with('success', 'Property created successfully.');
     }
 
-    public function show(Property $property) {
+    public function show($property_id) {
+        $property = Property::where('property_id', $property_id)->firstOrFail();
         $property->load('developer', 'transactions', 'assignedAgents');
+
         return view('properties.show', compact('property'));
     }
 
-    public function edit(Property $property) {
+    public function edit($property_id) {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
+        $property = Property::where('property_id', $property_id)->firstOrFail();
         $developers = Developer::all();
+
         return view('properties.edit', compact('property', 'developers'));
     }
 
-    public function update(Request $request, Property $property) {
+    public function update(Request $request, $property_id) {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
+        
+        $property = Property::where('property_id', $property_id)->firstOrFail();
 
         $validator = Validator::make($request->all(), (new StorePropertyRequest())->rules());
         $data = $validator->validate();
@@ -124,9 +128,11 @@ class PropertyController extends Controller {
         return redirect()->route('properties.index')->with('success', 'Property updated successfully.');
     }
 
-    public function destroy(Property $property)
+    public function destroy($property_id)
     {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
+        
+        $property = Property::where('property_id', $property_id)->firstOrFail();
 
         if ($property->image_url && file_exists(public_path($property->image_url))) {
             unlink(public_path($property->image_url));
@@ -141,7 +147,7 @@ class PropertyController extends Controller {
             'user_id' => Auth::id(),
             'action' => 'delete',
             'target_table' => 'properties',
-            'target_id' => $property->property_id,
+            'target_id' => $property_id,
             'remarks' => "Property {$property->property_code} deleted by " . Auth::user()->full_name,
         ]);
 

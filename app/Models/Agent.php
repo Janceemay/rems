@@ -9,14 +9,20 @@ class Agent extends Model
 {
     use HasFactory;
 
+    protected $table = 'agents';
     protected $primaryKey = 'agent_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
     protected $fillable = [
         'user_id',
         'rank',
         'contact_no',
         'email',
+        'team_id',
+        'manager_id',
         'remarks',
-        'team_id'
+        'created_at',
+        'updated_at'
     ];
 
     public function user()

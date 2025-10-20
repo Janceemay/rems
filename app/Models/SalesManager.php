@@ -24,7 +24,7 @@ class SalesManager extends Model
 
     public function agents()
     {
-        return $this->hasMany(Agent::class, 'manager_id', 'manager_id');
+        return $this->hasMany(Agent::class, 'manager_id', 'user_id');
     }
 
     public function teams()
@@ -62,5 +62,36 @@ class SalesManager extends Model
     public function getTotalSalesAttribute()
     {
         return $this->transactions()->sum('total_amount');
+    }
+
+    public function getQuotaMetAttribute()
+    {
+        $totalQuota = $this->quotas()->sum('amount');
+        return $totalQuota > 0 ? ($this->total_sales / $totalQuota) * 100 : 0;
+    }
+
+    public function getOngoingTransactionsAttribute()
+    {
+        return $this->transactions()->where('status', 'ongoing')->count();
+    }
+
+    public function getCompletedTransactionsAttribute()
+    {
+        return $this->transactions()->where('status', 'completed')->count();
+    }
+
+    public function getPendingTransactionsAttribute()
+    {
+        return $this->transactions()->where('status', 'pending')->count();
+    }
+
+    public function getCancelledTransactionsAttribute()
+    {
+        return $this->transactions()->where('status', 'cancelled')->count();
+    }
+
+    public function getTotalTransactionsAttribute()
+    {
+        return $this->transactions()->count();
     }
 }

@@ -13,11 +13,11 @@ class StorePropertyRequest extends FormRequest {
         return $user && ($user->isRole('Admin') || $user->isRole('Sales Manager'));
     }
 
-    public function rules(Request $request) {
-        $propertyId = $request->route('property')?->property_id ?? null;
+public function rules() {
+    $propertyId = $this->route('property')?->property_id ?? null;
 
         return [
-            'developer_id' => 'required|exists:developers,developer_id',
+            'developer_id' => 'nullable|exists:developers,developer_id',
             'property_code' => 'nullable|string|max:50|unique:properties,property_code,' . $propertyId . ',property_id',
             'property_type' => 'required|string|in:Condominium,House,Lot,Apartment,Townhouse',
             'title' => 'required|string|max:150',

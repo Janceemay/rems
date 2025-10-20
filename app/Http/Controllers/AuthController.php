@@ -13,6 +13,10 @@ use Illuminate\Validation\Rule;
 
 class AuthController extends Controller {
     public function showLogin() {
+        if(Auth::id() != null){
+            return $this->redirectByRole(Auth::user());
+        }
+        
         return view('auth.login');
     }
 
@@ -50,6 +54,10 @@ class AuthController extends Controller {
 
     public function showRegister()
     {
+        if(Auth::id() != null){
+            return $this->redirectByRole(Auth::user());
+        }
+        
         $roles = Role::whereNotIn('role_name', ['Admin'])->get();
         return view('auth.register', compact('roles'));
     }
@@ -63,7 +71,6 @@ class AuthController extends Controller {
             'role_id' => 'required|exists:roles,role_id',
         ]);
 
-        $data['password'] = Hash::make($data['password']);
         $data['status'] = 'active';
         $user = User::create($data);
 

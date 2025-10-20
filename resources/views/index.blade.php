@@ -17,12 +17,12 @@
     <section id="home" class="h-screen flex flex-col bg-[url('/images/Home_Background.jpg')] bg-cover bg-center bg-no-repeat bg-blend-multiply text-center text-black">
         <header class="h-20 p-6">
             <div class="max-w-7xl mx-auto flex justify-between items-center gap-8">
-                {{-- Logo   --}}
+                <!-- Logo -->
                 <div class="flex-shrink-0">
                     <img src="/images/logos/K._Palafox_Realty_Full_Logo.png" alt="Logo" class="h-12 w-auto">
                 </div>
 
-                {{-- Navigation --}}
+                <!-- Navigation -->
                 <nav class="flex items-center gap-6">
                     <a href="#home" class="hover:underline">Home</a>
                     <a href="#about" class="hover:underline">About</a>
@@ -33,20 +33,20 @@
 
                 <!-- Buttons -->
                 <div class="flex gap-3 ml-4">
-                    <button type="button" onclick="window.location.href='{{ route('login') }}'" class="text-black bg-white border border-gray-200 rounded-lg text-sm text-center p-2">
+                    <!-- <button type="button" onclick="window.location.href='{{ route('login') }}'" class="text-black bg-white border border-gray-200 rounded-lg text-sm text-center p-2">
                         Log In
-                    </button>
+                    </button> -->
                     <button type="button" class="text-white bg-blue-500 border border-gray-200 rounded-lg text-sm text-center p-2">Sign Up</button>
                 </div>
             </div>
         </header>
 
-        {{-- Hero Content --}}
+        <!-- Hero Content (fills remaining space) -->
         <div class="flex-1 flex flex-col items-center justify-center gap-8 p-8">
             <h1 class="text-4xl sm:text-4xl md:text-7xl lg:text-8xl font-bold">YOUR GROWTH PARTNER WITH VISION</h1>
             <p class="text-xl sm:text-xl md:text-2xl lg:text-3xl">We help you find your dream home from the best developers in the country.</p>
 
-            {{-- Search Bar and Button --}}
+            <!-- Search Bar -->
             <div class="w-full max-w-sm md:max-w-md lg:max-w-lg mt-6">
                 <div class="relative flex items-center gap-2">
                     <input class="w-full border border-gray-300 rounded-lg py-2 px-4" type="text" placeholder="Search for location, developer, or property type">
@@ -89,124 +89,123 @@
         </div>
     </section>
 
-    {{-- House Developers Section --}}
     <section id="developers" class="h-screen flex flex-col items-center justify-center p-8 gap-8 max-w-7xl mx-auto">
-        <h1 class="text-4xl sm:text-4xl md:text-7xl lg:text-8xl font-bold text-center mb-8">HOUSE DEVELOPERS</h1>
-        <p class="text-xl sm:text-xl md:text-base lg:text-2xl text-center">
-            We partner with the most trusted and reputable house developers in the Philippines to bring you a wide range of quality homes that suit your lifestyle and budget.
-        </p>
-
-        <div class="w-full gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
-            {{-- Block 1: Atlanta Realty --}}
-            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
-                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
-                    <img src="/images/logos/Atlanta_Realty_Logo.png" alt="Atlanta Realty Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
-                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Atlanta Realty</h1>
-                </div>
-                <p class="text-start">Atlanta Realty is known for its innovative designs and quality construction, offering a variety of residential properties that cater to different lifestyles.</p>
-            </a>
-            {{-- Block 2: Ayala Land --}}
-            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
-                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
-                    <img src="/images/logos/Ayala_Logo.png" alt="Ayala Land Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
-                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Ayala Land</h1>
-                </div>
-                <p class="text-start">Ayala Land is one of the largest and most established real estate developers in the Philippines, known for its master-planned communities and sustainable developments.</p>
-            </a>
-            {{-- Block 3: Borland --}}
-            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
-                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
-                    <img src="/images/logos/Borland_Logo.png" alt="Borland Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
-                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Borland</h1>
-                </div>
-                <p class="text-start">Borland is recognized for its commitment to quality and customer satisfaction, offering a range of residential properties that combine modern living with affordability.</p>
-            </a>
-            {{-- Block 4: Century Properties --}}
-            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
-                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
-                    <img src="/images/logos/Century_Properties_Logo.png" alt="Century Properties Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
-                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Century Properties</h1>
-                </div>
-                <p class="text-start">Century Properties is known for its innovative designs and quality construction, offering a variety of residential properties that cater to different lifestyles.</p>
-            </a>
-            {{-- Block 5: ServeQuest Group --}}
-            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
-                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
-                    <img src="/images/logos/ServeQuest_Group_Logo.png" alt="ServeQuest Group Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
-                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">ServeQuest Group</h1>
-                </div>
-                <p class="text-start">ServeQuest Group has built a reputation for delivering quality homes and excellent customer service, with a focus on creating vibrant communities.</p>
-            </a>
-            {{-- Block 6: Vista Land --}}
-            <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
-                <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
-                    <img src="/images/logos/Vista_Land_Logo.png" alt="Vista Land Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
-                    <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Vista Land</h1>
-                </div>
-                <p class="text-start">Vista Land is one of the largest homebuilders in the Philippines, known for its diverse portfolio of residential developments that cater to various market segments.</p>
-            </a>
+        <div class="flex items-center justify-center mb-6 space-x-3">
+            <div class="w-full gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+                {{-- Block 1: Atlanta Realty --}}
+                <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                    <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                        <img src="/images/logos/Atlanta_Realty_Logo.png" alt="Atlanta Realty Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                        <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Atlanta Realty</h1>
+                    </div>
+                    <p class="text-start">Atlanta Realty is known for its innovative designs and quality construction, offering a variety of residential properties that cater to different lifestyles.</p>
+                </a>
+                {{-- Block 2: Ayala Land --}}
+                <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                    <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                        <img src="/images/logos/Ayala_Logo.png" alt="Ayala Land Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                        <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Ayala Land</h1>
+                    </div>
+                    <p class="text-start">Ayala Land is one of the largest and most established real estate developers in the Philippines, known for its master-planned communities and sustainable developments.</p>
+                </a>
+                {{-- Block 3: Borland --}}
+                <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                    <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                        <img src="/images/logos/Borland_Logo.png" alt="Borland Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                        <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Borland</h1>
+                    </div>
+                    <p class="text-start">Borland is recognized for its commitment to quality and customer satisfaction, offering a range of residential properties that combine modern living with affordability.</p>
+                </a>
+                {{-- Block 4: Century Properties --}}
+                <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                    <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                        <img src="/images/logos/Century_Properties_Logo.png" alt="Century Properties Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                        <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Century Properties</h1>
+                    </div>
+                    <p class="text-start">Century Properties is known for its innovative designs and quality construction, offering a variety of residential properties that cater to different lifestyles.</p>
+                </a>
+                {{-- Block 5: ServeQuest Group --}}
+                <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                    <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                        <img src="/images/logos/ServeQuest_Group_Logo.png" alt="ServeQuest Group Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                        <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">ServeQuest Group</h1>
+                    </div>
+                    <p class="text-start">ServeQuest Group has built a reputation for delivering quality homes and excellent customer service, with a focus on creating vibrant communities.</p>
+                </a>
+                {{-- Block 6: Vista Land --}}
+                <a href="" class="flex flex-col bg-white border-2 border-gray-300 rounded-3xl p-4 w-full sm:w-64 md:w-72 lg:w-96">
+                    <div class="flex sm:flex-col md:flex-row lg:flex-col items-center justify-start gap-4 mb-4">
+                        <img src="/images/logos/Vista_Land_Logo.png" alt="Vista Land Logo" class="w-2/3 md:w-12 md:h-12 lg:size-8/12 object-contain">
+                        <h1 class="text-4xl md:text-6xl lg:text-3xl font-bold text-start">Vista Land</h1>
+                    </div>
+                    <p class="text-start">Vista Land is one of the largest homebuilders in the Philippines, known for its diverse portfolio of residential developments that cater to various market segments.</p>
+                </a>
+            </div>
         </div>
     </section>
 
     <!-- Property Section -->
-    <section id="property" class="h-screen flex flex-col items-center justify-center p-8 gap-8 max-w-7xl mx-auto">
+    <section id="property" class="min-h-screen flex flex-col items-center justify-center p-8 gap-8 max-w-7xl mx-auto">
         <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-center mb-4">Property Type</h1>
         <p class="text-lg md:text-xl lg:text-2xl text-center max-w-3xl mx-auto mb-8">
             Explore a variety of property types to find the perfect home that suits your lifestyle and preferences.
         </p>
-        <div class="relative w-full max-w-6xl overflow-hidden px-4">
-            <div class="swiper w-full">
+        <div class="relative w-full max-w-6xl px-4 mx-auto overflow-x-hidden">
+            <div class="swiper w-full justify-center items-center">
                 <div class="swiper-wrapper">
                     <!-- Slide 1 -->
-                    <div class="swiper-slide">
-                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
-                            <img src="/images/logos/Ayala_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="Ayala">
+                    <div class="swiper-slide justify-center items-center">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg w-full max-w-md mx-auto h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px]">
+                            <img src="/images/logos/Ayala_Logo.png" alt="Ayala" class="h-1/2 w-1/2 object-contain mb-4" alt="Ayala" />
                             <span class="text-lg font-medium text-gray-800">Ayala Land</span>
                         </div>
                     </div>
+
                     <!-- Slide 2 -->
                     <div class="swiper-slide">
-                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg w-full max-w-md mx-auto h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px]">
                             <img src="/images/logos/Century_Properties_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="Century">
                             <span class="text-lg font-medium text-gray-800">Century Properties</span>
                         </div>
                     </div>
                     <!-- Slide 3 -->
                     <div class="swiper-slide">
-                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg w-full max-w-md mx-auto h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px]">
                             <img src="/images/logos/Vista_Land_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="Vista">
                             <span class="text-lg font-medium text-gray-800">Vista Land</span>
                         </div>
                     </div>
                     <!-- Slide 4 -->
                     <div class="swiper-slide">
-                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg w-full max-w-md mx-auto h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px]">
                             <img src="/images/logos/Atlanta_Realty_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="Atlanta">
                             <span class="text-lg font-medium text-gray-800">Atlanta Realty</span>
                         </div>
                     </div>
                     <!-- Slide 5 -->
                     <div class="swiper-slide">
-                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                       <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg w-full max-w-md mx-auto h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px]">
                             <img src="/images/logos/Borland_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="Borland">
                             <span class="text-lg font-medium text-gray-800">Borland</span>
                         </div>
                     </div>
                     <!-- Slide 6 -->
                     <div class="swiper-slide">
-                        <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
+                       <div class="flex flex-col items-center justify-center bg-gray-100 p-6 rounded-lg w-full max-w-md mx-auto h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px]">
                             <img src="/images/logos/ServeQuest_Group_Logo.png" class="h-1/2 w-1/2 object-contain mb-4" alt="ServeQuest">
                             <span class="text-lg font-medium text-gray-800">ServeQuest Group</span>
                         </div>
                     </div>
                 </div>
+                <!-- Pagination dots -->
+                <div class="swiper-pagination mt-6 flex justify-center gap-2"></div>
                 <!-- Navigation buttons -->
-                <div class="swiper-button-prev absolute top-1/2 left-0 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-full shadow hover:bg-blue-100 hover:text-blue-700 transition duration-200">
+                <div class="swiper-button-prev absolute top-1/2 left-2 sm:left-4 transform -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </div>
-                <div class="swiper-button-next absolute top-1/2 right-0 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-full shadow hover:bg-blue-100 hover:text-blue-700 transition duration-200">
+                <div class="swiper-button-next absolute top-1/2 right-2 sm:right-4 transform -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
@@ -337,7 +336,6 @@
 </section>
 
     </main>
-    {{-- Footer --}}
     <footer class="text-black p-6">
         <div class="max-w-7xl mx-auto flex flex-nowrap justify-between gap-8">
 
@@ -389,30 +387,31 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script>
         const swiper = new Swiper('.swiper', {
-            loop: true
-            , centerdSlides: true
-            , spaceBetween: 50
-            , slidesPerView: 3
-            , breakpoints: {
-                640: {
-                    slidesPerView: 1
-                , }
-                , 768: {
-                    slidesPerView: 2
-                , }
-                , 1024: {
-                    slidesPerView: 3
-                , }
-            , }
-            , navigation: {
+            loop: true,
+            centerdSlides: true,
+            initialSlide: 0,
+            spaceBetween: 30,
+            slidesPerView: 1,
+           breakpoints: {
+                640: { slidesPerView: 1 },
+                768: { slidesPerView: 2, centeredSlides: false },
+                1024: { slidesPerView: 3, centeredSlides: false },
+                },
+            navigation: {
                 nextEl: '.swiper-button-next'
                 , prevEl: '.swiper-button-prev'
-            , },
-
+            },
             pagination: {
                 el: '.swiper-pagination'
                 , clickable: true
-            , }
+            },
+
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            }
+
+
         , });
 
     </script>

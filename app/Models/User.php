@@ -10,9 +10,13 @@ class User extends Authenticatable
 {
     use Notifiable, HasFactory;
     
+    protected $table = 'users';
     protected $primaryKey = 'user_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
     protected $fillable = [
         'role_id',
+        'manager_id',
         'full_name',
         'email',
         'password',

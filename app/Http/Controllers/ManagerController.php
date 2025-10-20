@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class AgentController extends Controller {
+class ManagerController extends Controller {
     public function index()
     {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
@@ -36,11 +36,11 @@ class AgentController extends Controller {
     {
         $user = Auth::user();
 
-        if (!$user->isRole('Agent')) {
+        if (!$user->isRole('Sales Manager')) {
             abort(403, 'Unauthorized access.');
         }
 
-        return view('profiles.agent', compact('user'));
+        return view('profiles.manager', compact('user'));
     }
 
     public function updateProfile(Request $request)
@@ -69,10 +69,10 @@ class AgentController extends Controller {
             'action' => 'update',
             'target_table' => 'users',
             'target_id' => $user->user_id,
-            'remarks' => "Client profile updated by {$user->full_name}",
+            'remarks' => "Your profile is successfully updated",
         ]);
 
-        return redirect()->route('profiles.agent')->with('success', 'Profile updated successfully.');
+        return redirect()->route('profiles.manager')->with('success', 'Profile updated successfully.');
     }
 
     public function create()
@@ -99,7 +99,8 @@ class AgentController extends Controller {
         ]);
 
         $manager = Auth::user();
-        $agentRole = Role::where('role_name', 'Agent')->first();
+        $agentRole = Role::where('role_name', 'Sales Manager')->first();
+
         $defaultPassword = 'helloworld123';
 
         $user = User::create([
@@ -114,6 +115,7 @@ class AgentController extends Controller {
             'status' => 'active',
         ]);
 
+        //remember to use model agents
         $agent = Agent::create([
             'user_id' => $user->user_id,
             'rank' => '',
@@ -138,7 +140,7 @@ class AgentController extends Controller {
     public function edit(User $agent) {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
-        if ($agent->role->role_name !== 'Agent') {
+        if ($agent->role->role_name !== 'Manager') {
             return redirect()->route('agents.index')->with('error', 'User is not an agent.');
         }
 
@@ -148,7 +150,7 @@ class AgentController extends Controller {
     public function update(Request $request, User $agent) {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
-        if ($agent->role->role_name !== 'Agent') {
+        if ($agent->role->role_name !== 'Sales Manager') {
             return redirect()->route('agents.index')->with('error', 'User is not an agent.');
         }
 
@@ -208,6 +210,4 @@ class AgentController extends Controller {
             abort(403, 'Unauthorized action.');
         }
     }
-
-
 }
