@@ -115,10 +115,10 @@
                         @enderror
                     </div>
                     
-                    @if($property->image_url)
+                    @if(asset($property->image_url))
                         <div class="mb-6">
                             <label class="block text-gray-700 font-semibold mb-2">Current Image</label>
-                            <img src="{{ $property->image_url }}" style="max-width: 200px; height: auto;" class="border border-gray-300 rounded-lg mb-3">
+                            <img src="{{ asset($property->image_url) }}" style="max-width: 200px; height: auto;" class="border border-gray-300 rounded-lg mb-3">
                         </div>
                     @endif
                     
