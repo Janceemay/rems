@@ -62,6 +62,56 @@ class ClientController extends Controller {
         return redirect()->route('clients.index')->with('success', 'Client created successfully.');
     }
 
+    public function setup()
+    {
+        $user = Auth::user();
+
+        if ($user->client && $user->client->current_job !== null) {
+            return redirect()->route('dashboard.client');
+        }
+
+        return view('clients.setup', compact('user'));
+    }
+
+    public function storeSetup(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user->isRole('Client')) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $validated = $request->validate([
+            'relationship_status' => 'nullable|string|max:50',
+            'birthday' => 'nullable|date',
+            'age' => 'nullable|integer|min:18|max:100',
+            'gender' => 'nullable|string|max:20',
+            'contact_number' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'source_of_income' => 'nullable|string|max:100',
+            'current_job' => 'nullable|string|max:100',
+        ]);
+
+        $client = $user->client;
+
+        if ($client) {
+            $client->update($validated);
+        } else {
+            $validated['user_id'] = $user->user_id;
+            Client::create($validated);
+        }
+
+        AuditLog::create([
+            'user_id' => $user->user_id,
+            'action' => 'update',
+            'target_table' => 'clients',
+            'target_id' => $user->client->client_id ?? 'new',
+            'remarks' => "Client setup completed by {$user->full_name}",
+        ]);
+
+        return redirect()->route('dashboard.client')->with('success', 'Profile setup completed.');
+    }
+
     public function edit(Client $client) {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
@@ -137,8 +187,7 @@ class ClientController extends Controller {
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:11',
-            'age' => 'required|integer',
+            'bio' => 'nullable|string|max:1000',
             'profile_picture' => 'nullable|image|max:2048',
         ]);
 
@@ -147,13 +196,6 @@ class ClientController extends Controller {
             $user->profile_picture = '/storage/' . $path;
         }
 
-        if ($request->hasFile('image')) {
-            $data = $request->file('image')->store('properties', 'public');
-            $data = '/storage/' . $data;
-        }
-
-        $user->contact_number = $request->phone;
-        $user->age = $request->age;
         $user->full_name = $request->name;
         $user->save();
 
@@ -165,6 +207,6 @@ class ClientController extends Controller {
             'remarks' => "Client profile updated by {$user->full_name}",
         ]);
 
-        return redirect()->route('profiles.client')->with('success', 'Profile updated successfully.');
+        return redirect()->route('profile')->with('success', 'Profile updated successfully.');
     }
 }

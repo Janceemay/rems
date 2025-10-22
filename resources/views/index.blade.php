@@ -28,8 +28,14 @@
                 <a href="#location" class="hover:underline">Location</a>
             </nav>
             <div class="flex gap-2">
+                @guest
                 <a href="{{ route('login') }}" class="text-black bg-white border border-gray-300 rounded-xl text-sm px-4 py-2">Log In</a>
                 <a href="{{ route('register') }}" class="text-white bg-[#2a47ff] rounded-xl text-sm px-4 py-2">Sign Up</a>
+                @else
+                <a href="{{ route('dashboard') }}" class="text-white bg-[#2a47ff] rounded-xl text-sm px-4 py-2">
+                    Go to Dashboard
+                </a>
+                @endguest
             </div>
         </div>
     </header>

@@ -11,11 +11,18 @@ class Client extends Model
     
     protected $primaryKey = 'client_id';
     protected $fillable = [
-        'user_id',
-        'current_job',
-        'financing_type',
-        'remarks'
-    ];
+    'user_id',
+    'relationship_status',
+    'birthday',
+    'age',
+    'gender',
+    'contact_number',
+    'address',
+    'source_of_income',
+    'current_job',
+    'financing_type',
+    'remarks'
+];
 
     public function user()
     {

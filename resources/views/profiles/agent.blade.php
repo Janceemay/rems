@@ -1,84 +1,107 @@
+{{-- Layout --}}
 @extends('components.layouts.app')
 
+{{-- Change this when updating the title bar --}}
 @section('title', 'Profile')
 
+{{-- Main Content --}}
 @section('content')
-<main class="flex-1 p-6 overflow-y-auto space-y-6">
-  <!-- Profile Section -->
-  <div class="w-full xl:w-3/4 mx-auto">
-    <div class="flex flex-wrap gap-4">
-      <!-- Profile Card -->
-      <div class="w-full md:w-1/3">
-        <div class="bg-white shadow rounded flex flex-col items-center p-6">
-          <img src="{{ asset($user->profile_picture) }}"
-               alt="Profile Picture"
-               class="rounded-full mb-4 w-32 h-32 object-cover" />
-          <h4 class="font-bold text-lg">{{ $user->full_name }}</h4>
-          <p class="text-gray-500">{{ $user->email }}</p>
-          <button @click="document.getElementById('editProfileModal').classList.remove('hidden')"
-                  class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">
-            Edit Profile
-          </button>
-        </div>
-      </div>
+<main class="flex-1 px-6 py-10 overflow-y-auto bg-white text-gray-800 border-gray-300 border-2 rounded-3xl">
+    {{-- Profile Header --}}
+    <section class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+        {{-- Left: Profile Picture + Info --}}
+        <div class="flex items-center gap-6">
+            <img src="{{ asset($user->profile_picture) }}" alt="Profile Picture" class="rounded-full w-32 h-32 object-cover border" />
 
-      <!-- Info Card -->
-      <div class="w-full md:w-2/3 flex justify-end">
-        <div class="bg-white shadow rounded w-full md:w-2/3 p-6">
-          <ul class="space-y-3 text-gray-700">
-            <li><span class="font-semibold">Status:</span> {{ $user->role->role_name }}</li>
-            <li><span class="font-semibold">Gender:</span> {{ $user->gender }}</li>
-            <li><span class="font-semibold">Age:</span> {{ $user->age }}</li>
-            <li><span class="font-semibold">Phone:</span> {{ $user->contact_number }}</li>
-          </ul>
+            <div class="space-y-5">
+                <h1 class="text-5xl font-bold text-[#2a47ff]">{{ $user->full_name }}</h1>
+                <p class="text-xl text-gray-600">{{ $user->email }}</p>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Modal -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" id="editProfileModal">
-    <div class="bg-white rounded-lg w-full max-w-md">
-      <div class="flex justify-between items-center border-b p-4">
-        <h5 class="text-lg font-semibold">Edit Profile</h5>
-        <button class="text-gray-500 hover:text-gray-700" onclick="document.getElementById('editProfileModal').classList.add('hidden')">×</button>
-      </div>
-      <div class="p-4">
-        <form action="{{ route('agent.update') }}" method="POST" enctype="multipart/form-data">
-          @csrf
-          <div class="mb-4">
-            <label for="profile_picture" class="block font-medium mb-1">Profile Picture</label>
-            <input type="file" id="profile_picture" name="profile_picture" class="w-full border rounded px-3 py-2" />
-          </div>
-          <div class="mb-4">
-            <label for="name" class="block font-medium mb-1">Name</label>
-            <input type="text" id="name" name="name" value="{{ $user->full_name }}" class="w-full border rounded px-3 py-2" />
-          </div>
-          <div class="mb-4">
-            <label for="age" class="block font-medium mb-1">Age</label>
-            <input type="number" id="age" name="age" value="{{ $user->age }}" class="w-full border rounded px-3 py-2" />
-          </div>
-          <div class="mb-4">
-            <label for="email" class="block font-medium mb-1">Email</label>
-            <input type="email" id="email" name="email" value="{{ $user->email }}" disabled class="w-full border rounded px-3 py-2 bg-gray-100" />
-          </div>
-          <div class="mb-4">
-            <label for="phone" class="block font-medium mb-1">Phone Number</label>
-            <input type="text" id="phone" name="phone" value="{{ $user->contact_number }}" class="w-full border rounded px-3 py-2" />
-          </div>
-          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save Changes</button>
-        </form>
-      </div>
+        {{-- Right: Edit Button --}}
+        <div>
+            <button onclick="document.getElementById('editProfileModal').classList.remove('hidden')" class="bg-[#2a47ff] text-white px-6 py-2 rounded-xl hover:bg-[#2a47ff]/80 transition">
+                Edit Profile
+            </button>
+        </div>
+    </section>
+
+    {{-- Personal Details --}}
+    <section class="max-w-5xl mx-auto mt-10 space-y-6 text-sm">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+                <label class="font-bold text-gray-700 text-3xl">Role</label>
+                <p class="mt-1 text-gray-800 text-lg">{{ $user->role->role_name }}</p>
+            </div>
+            <div>
+                <label class="font-bold text-gray-700 text-3xl">Gender</label>
+                <p class="mt-1 text-gray-800 text-lg">{{ $user->gender }}</p>
+            </div>
+            <div>
+                <label class="font-bold text-gray-700 text-3xl">Age</label>
+                <p class="mt-1 text-gray-800 text-lg">{{ $user->age }}</p>
+            </div>
+            <div>
+                <label class="font-bold text-gray-700 text-3xl">Phone</label>
+                <p class="mt-1 text-gray-800 text-lg">{{ $user->contact_number }}</p>
+            </div>
+            <div>
+                <label class="font-bold text-gray-700 text-3xl">Email</label>
+                <p class="mt-1 text-gray-800 text-lg">{{ $user->email }}</p>
+            </div>
+            <div>
+                <label class="font-bold text-gray-700 text-3xl">Address</label>
+                {{-- <p class="mt-1 text-gray-800">{{ $user->client->address }}</p> --}}
+            </div>
+            <div>
+                <label class="font-bold text-gray-700 text-3xl">Occupation</label>
+                {{-- <p class="mt-1 text-gray-800">{{ $user->client->current_job }}</p> --}}
+            </div>
+        </div>
+    </section>
+
+    {{-- Edit ProfileModal --}}
+    <div id="editProfileModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl w-full max-w-md shadow-lg">
+            <div class="flex justify-between items-center border-b px-6 py-4">
+                <h5 class="text-lg font-semibold text-[#2a47ff]">Edit Profile</h5>
+                <button onclick="document.getElementById('editProfileModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+            </div>
+            <div class="px-6 py-4">
+                <form action="{{ route('agent.update') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label for="profile_picture" class="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
+                        <input type="file" id="profile_picture" name="profile_picture" class="w-full border rounded-xl px-4 py-2 shadow-sm focus:ring-[#2a47ff] focus:border-[#2a47ff]" />
+                    </div>
+
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" id="name" name="name" value="{{ $user->full_name }}" class="w-full border rounded-xl px-4 py-2 shadow-sm focus:ring-[#2a47ff] focus:border-[#2a47ff]" />
+                    </div>
+
+                    <div>
+                        <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                        <input type="number" id="age" name="age" value="{{ $user->age }}" class="w-full border rounded-xl px-4 py-2 shadow-sm focus:ring-[#2a47ff] focus:border-[#2a47ff]" />
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="email" name="email" value="{{ $user->email }}" disabled class="w-full border rounded-xl px-4 py-2 bg-gray-100 text-gray-500" />
+                    </div>
+
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="text" id="phone" name="phone" value="{{ $user->contact_number }}" class="w-full border rounded-xl px-4 py-2 shadow-sm focus:ring-[#2a47ff] focus:border-[#2a47ff]" />
+                    </div>
+
+                    <button type="submit" class="w-full bg-[#2a47ff] text-white py-2 rounded-xl hover:bg-green-700 transition">
+                        Save Changes
+                    </button>
+                </form> 
+            </div>
+        </div>
     </div>
-  </div>
 </main>
-
-<script>
-  document.querySelectorAll('[data-bs-toggle="modal"]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.getAttribute('data-bs-target');
-      document.querySelector(target).classList.remove('hidden');
-    });
-  });
-</script>
 @endsection

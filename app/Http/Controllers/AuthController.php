@@ -118,14 +118,15 @@ class AuthController extends Controller {
 
     protected function redirectByRole(User $user)
     {
-        $roleName = strtolower($user->role->role_name);
+        // $roleName = strtolower($user->role->role_name);
 
-        return match ($roleName) {
-            'admin' => redirect()->route('dashboard.admin'),
-            'sales manager' => redirect()->route('dashboard.manager'),
-            'agent' => redirect()->route('dashboard.agent'),
-            'client' => redirect()->route('dashboard.client'),
-            default => redirect('/dashboard'),
-        };
+        // return match ($roleName) {
+        //     'admin' => redirect()->route('dashboard.admin'),
+        //     'sales manager' => redirect()->route('dashboard.manager'),
+        //     'agent' => redirect()->route('dashboard.agent'),
+        //     'client' => redirect()->route('dashboard.client'),
+        //     default => redirect('/dashboard'),
+        // };
+        return redirect()->route('dashboard');
     }
 }
