@@ -101,21 +101,18 @@ class PropertyController extends Controller {
         $validator = Validator::make($request->all(), (new StorePropertyRequest())->rules());
         $data = $validator->validate();
 
+        $property->fill($data);
+
         if ($request->hasFile('image')) {
-            if ($property->image_url && file_exists(public_path($property->image_url))) {
-                unlink(public_path($property->image_url));
+            if ($property->image_url && file_exists(public_path('storage/' . $property->image_url))) {
+                unlink(public_path('storage/' . $property->image_url));
             }
-            $data['image_url'] = '/storage/' . $request->file('image')->store('properties', 'public');
+
+            $path = $request->file('image')->store('properties', 'public');
+            $property->image_url = $path;
         }
 
-        if ($request->hasFile('floor_plan')) {
-            if ($property->floor_plan && file_exists(public_path($property->floor_plan))) {
-                unlink(public_path($property->floor_plan));
-            }
-            $data['floor_plan'] = '/storage/' . $request->file('floor_plan')->store('floorplans', 'public');
-        }
-
-        $property->update($data);
+        $property->save();
 
         AuditLog::create([
             'user_id' => Auth::id(),
@@ -134,8 +131,8 @@ class PropertyController extends Controller {
         
         $property = Property::where('property_id', $property_id)->firstOrFail();
 
-        if ($property->image_url && file_exists(public_path($property->image_url))) {
-            unlink(public_path($property->image_url));
+        if ($property->image_url && file_exists(public_path('storage/' . $property->image_url))) {
+            unlink(public_path('storage/' . $property->image_url));
         }
         if ($property->floor_plan && file_exists(public_path($property->floor_plan))) {
             unlink(public_path($property->floor_plan));
