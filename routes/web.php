@@ -56,9 +56,12 @@ Route::middleware(['auth'])->group(function () {
     })->name('profile');
 
     // Dashboard Routes
-    Route::get('/dashboard', [DashboardController::class, 'show'])->middleware('auth')->name('dashboard');    
+    Route::get('/dashboard', [DashboardController::class, 'show'])->middleware('auth')->name('dashboard');
 
     // Property Routes
+    Route::post('/properties/{property}/assign-agent', [PropertyController::class, 'assignAgent'])->name('properties.assignAgent');
+    Route::put('/properties/{property}/update-agents', [PropertyController::class, 'updateAgents'])->name('properties.updateAgents');
+    Route::delete('/properties/{property}/remove-agent/{agent}', [PropertyController::class, 'removeAgent'])->name('properties.removeAgent');
     Route::middleware('role:Admin,Sales Manager')->group(function () {
         Route::resource('properties', PropertyController::class)->except(['show']);
         Route::get('/properties/create', [PropertyController::class, 'create'])->name('properties.create');
@@ -76,6 +79,10 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('agents', AgentController::class);
     });
 
+    Route::middleware('role:Client')->group(function () {
+        Route::get('/clients/setup', [ClientController::class, 'setup'])->name('clients.setup');
+        Route::post('/clients/setup', [ClientController::class, 'storeSetup'])->name('clients.storeSetup');
+    });
     // Transaction Routes
     Route::middleware('role:Agent,Client,Sales Manager,Admin')->group(function () {
         Route::resource('transactions', TransactionController::class)->except(['edit', 'update', 'destroy']);

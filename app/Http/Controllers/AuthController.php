@@ -74,7 +74,7 @@ class AuthController extends Controller {
         $data['status'] = 'active';
         $user = User::create($data);
 
-        if ($user->role->role_name === 'Client') {
+        if (strtolower($user->role->role_name) === 'client') {
             Client::create([
                 'user_id' => $user->user_id,
                 'current_job' => null,
