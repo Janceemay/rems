@@ -72,7 +72,7 @@ class ManagerController extends Controller {
             'remarks' => "Your profile is successfully updated",
         ]);
 
-        return redirect()->route('profiles.manager')->with('success', 'Profile updated successfully.');
+        return redirect()->route('profile')->with('success', 'Profile updated successfully.');
     }
 
     public function create()

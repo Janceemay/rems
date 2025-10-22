@@ -7,9 +7,7 @@
 @section('content')
 {{-- Main Content --}}
 <main class="flex-1 p-6 overflow-y-auto space-y-6">
-
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
         {{-- Total Commissions --}}
         <div class="flex items-center p-6 rounded-3xl border-2 border-gray-300 gap-5">
             <!-- Icon -->
@@ -51,9 +49,7 @@
                 <div class="mt-2 text-sm sm:text-base md:text-lg lg:text-xl font-light text-gray-700">Pending Approvals</div>
             </div>
         </div>
-
     </div>
-
 
     <!-- Active Transaction -->
     <div class="bg-white p-6 rounded-lg shadow">

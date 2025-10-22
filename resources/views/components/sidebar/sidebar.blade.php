@@ -1,29 +1,32 @@
 @php
-$role = strtolower(Auth::user()->role->role_name);
+    use Illuminate\Support\Facades\Route;
+
+    $role = strtolower(Auth::user()->role->role_name);
 @endphp
 
 <nav class="px-2 space-y-2 mt-4">
+    {{-- Shared Navigation --}}
+    <x-sidebar.link route="home" icon="home" label="Home" />
+    <x-sidebar.link route="dashboard" icon="dashboard" label="Dashboard" />
+    <x-sidebar.link route="properties.index" icon="apartment" label="Properties" />
+    <x-sidebar.link route="profile" icon="user" label="Profile" />
+
     {{-- Agent Navigation --}}
     @if ($role === 'agent')
-    <x-sidebar.link route="dashboard.agent" icon="dashboard" label="Dashboard" />
-    <x-sidebar.link route="profiles.agent" icon="user" label="Profile" />
-    <x-sidebar.link route="properties.index" icon="home" label="Housing" />
+        {{-- Add more agent-specific links here --}}
     @endif
 
-    {{-- Manager Navigation --}}
+    {{-- Sales Manager Navigation --}}
     @if ($role === 'sales manager')
-    <x-sidebar.link route="dashboard.manager" icon="chart-line" label="Overview" />
-    <x-sidebar.link route="team.index" icon="users" label="Team" />
-    <x-sidebar.link route="reports.index" icon="file-chart" label="Reports" />
+        <x-sidebar.link route="team.index" icon="users" label="Team" />
+        <x-sidebar.link route="reports.index" icon="file-chart" label="Reports" />
     @endif
 
     {{-- Admin Navigation --}}
     @if ($role === 'admin')
-    <x-sidebar.link route="dashboard.admin" icon="settings" label="Admin Panel" />
-    <x-sidebar.link route="users.index" icon="users-alt" label="Users" />
+        <x-sidebar.link route="users.index" icon="users-alt" label="Users" />
     @endif
 
-    {{-- Common Navigation --}}
     {{-- Logout --}}
     <form action="{{ route('logout') }}" method="POST">
         @csrf

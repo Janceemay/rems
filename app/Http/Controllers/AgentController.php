@@ -72,7 +72,7 @@ class AgentController extends Controller {
             'remarks' => "Client profile updated by {$user->full_name}",
         ]);
 
-        return redirect()->route('profiles.agent')->with('success', 'Profile updated successfully.');
+        return redirect()->route('profile')->with('success', 'Profile updated successfully.');
     }
 
     public function create()

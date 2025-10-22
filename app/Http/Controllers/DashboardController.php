@@ -7,10 +7,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\{Property, Transaction, User, Payment, Commission, Team, Quota, AuditLog, Agent};
 
 class DashboardController extends Controller {
-    public function index() {
+    public function show() {
         $user = Auth::user();
         $role = strtolower($user->role->role_name ?? '');
-
+    
+        // Role-based dashboard routing
         return match ($role) {
             'admin' => $this->showAdminDashboard(),
             'sales manager' => $this->showManagerDashboard(),
@@ -20,6 +21,48 @@ class DashboardController extends Controller {
         };
     }
 
+    public function assignAgent(Request $request, Transaction $transaction) {
+        $this->authorizeRoles(['Admin', 'Sales Manager']);
+        
+        $validated = $request->validate([
+            'agent_id' => 'required|exists:users,user_id'
+        ]);
+        
+        $transaction->update(['agent_id' => $validated['agent_id']]);
+        
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'assign',
+            'target_table' => 'transactions',
+            'target_id' => $transaction->transaction_id,
+            'remarks' => "Transaction assigned to agent by " . Auth::user()->full_name,
+        ]);
+        
+        return redirect()->back()->with('success', 'Transaction assigned to agent');
+    }
+
+    public function assignToMe(Transaction $transaction) {
+        $this->authorizeRoles(['Agent']);
+        
+        $transaction->update(['agent_id' => Auth::id()]);
+        
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'accept',
+            'target_table' => 'transactions',
+            'target_id' => $transaction->transaction_id,
+            'remarks' => "Transaction accepted by agent " . Auth::user()->full_name,
+        ]);
+        
+        return redirect()->back()->with('success', 'Transaction accepted');
+    }
+
+    private function authorizeRoles(array $roles) {
+        $userRole = optional(Auth::user()->role)->role_name ?? '';
+        if (!in_array($userRole, $roles)) {
+            abort(403, 'Unauthorized action.');
+        }
+}
     public function showAdminDashboard()
     {
         $totalProperties = Property::count();
@@ -28,33 +71,47 @@ class DashboardController extends Controller {
         $totalUsers = User::count();
         $recentTransactions = Transaction::with(['client.user', 'property', 'agent'])->latest()->take(10)->get();
 
-        return view('dashboard.admin', compact(
-            'totalProperties',
-            'available',
-            'sold',
-            'totalUsers',
-            'recentTransactions'
-        ));
+        return view('dashboard.admin', [
+            'totalProperties' => $totalProperties,
+            'available' => $available,
+            'sold' => $sold,
+            'totalUsers' => $totalUsers,
+            'recentTransactions' => $recentTransactions
+        ]);
     }
 
     public function showManagerDashboard()
     {
         $manager = Auth::user();
         
-        $pending = Transaction::where('status', 'Pending')
-            ->count();
+        // Get all transactions with relationships
+        $transactions = Transaction::with(['client.user', 'property', 'agent'])->latest()->get();
+        
+        
+        // Get all agents
+        $agents = User::whereHas('role', function ($q) {
+            $q->where('role_name', 'Agent');
+        })->get();
 
-        $ongoing = Transaction::where('status', 'Ongoing')
-            ->count();
+        // Calculate top agent
+        $topAgent = $agents->map(function($agent) use ($transactions) {
+            $agentTransactions = $transactions->where('agent_id', $agent->user_id);
+            return [
+                'agent' => $agent,
+                'total_sales' => $agentTransactions->sum('total_amount'),
+                'completed_count' => $agentTransactions->where('status', 'Completed')->count(),
+                'transaction_count' => $agentTransactions->count()
+            ];
+        })->sortByDesc('total_sales')->first();
 
-        $completed = Transaction::where('status', 'Completed')
-            ->count();
+        $pending = Transaction::where('status', 'Pending')->count();
+        $ongoing = Transaction::where('status', 'Ongoing')->count();
+        $completed = Transaction::where('status', 'Completed')->count();
 
         $totalAgents = User::whereHas('role', fn($q) => $q->where('role_name', 'Agent'))->count();
         $activeQuotas = Quota::where('manager_id', $manager->user_id)->count();
-        $totalSales = Transaction::whereHas('agent', function ($q) use ($manager) {
-            $q->where('transaction_id', $manager->user_id);
-        })->sum('total_amount');
+        
+        $totalSales = Transaction::where('status', 'Completed')->sum('total_amount');
 
         $topAgents = User::whereHas('transactions')
             ->withCount('transactions')
@@ -62,48 +119,51 @@ class DashboardController extends Controller {
             ->take(5)
             ->get();
 
-        $members = Agent::with('user')
-            ->where('manager_id', $manager->user_id)
-            ->orderByRaw("CASE WHEN rank = 'Top Selling Agent' THEN 0 ELSE 1 END")
-            ->orderBy('commission', 'desc')
-            ->get();
-
+        // Update agent ranks
         Agent::query()->update(['rank' => '']);
-
-        $topAgent = Agent::orderBy('commission', 'desc')->first();
-
-        if ($topAgent) {
-            $topAgent->update(['rank' => 'Top Selling Agent']);
+        $topSellingAgent = Agent::orderBy('commission', 'desc')->first();
+        if ($topSellingAgent) {
+            $topSellingAgent->update(['rank' => 'Top Selling Agent']);
         }
 
-        foreach ($members as $member) {
-            $info = User::find($member->user_id);
-            $member->full_name = $info->full_name;
-            $member->email = $info->email;
-            $member->profile_picture = $info->profile_picture;
-        }
+        // Get manager's team members with user info
+        $members = Agent::where('manager_id', $manager->user_id)
+            ->with('user')
+            ->get()
+            ->map(function($member) {
+                $member->full_name = $member->user->full_name ?? 'N/A';
+                return $member;
+            });
 
-        $topselling = $topAgent;
-
-
-        return view('dashboard.manager', compact(
-            'totalAgents',
-            'activeQuotas',
-            'totalSales',
-            'topAgents',
-            'pending',
-            'ongoing',
-            'completed',
-            'members',
-            'topselling'
-        ));
+        return view('dashboard.manager', [
+            'totalAgents' => $totalAgents,
+            'activeQuotas' => $activeQuotas,
+            'totalSales' => $totalSales,
+            'pending' => $pending,
+            'ongoing' => $ongoing,
+            'completed' => $completed,
+            'members' => $members,
+            'topAgent' => $topAgent,
+            'transactions' => $transactions,
+            'agents' => $agents
+        ]);
     }
 
     public function showAgentDashboard()
     {
         $agent = Auth::user();
 
-        $assignedProperties = $agent->propertiesAssigned()->count();
+        $members = Agent::where('manager_id', $agent->manager_id)
+            ->with('user')
+            ->get()
+            ->map(function($member) {
+                $member->full_name = $member->user->full_name ?? 'N/A';
+                return $member;
+            });
+
+        // Get all transactions for agent dashboard needs
+        $transactions = Transaction::with(['client.user', 'property', 'agent'])->latest()->get();
+
         $activeTransactions = Transaction::where('agent_id', $agent->user_id)->count();
         $pendingApprovals = Transaction::where('agent_id', $agent->user_id)
             ->where('status', 'Pending')
@@ -118,13 +178,14 @@ class DashboardController extends Controller {
             ->take(10)
             ->get();
 
-        return view('dashboard.agent', compact(
-            'assignedProperties',
-            'activeTransactions',
-            'pendingApprovals',
-            'totalCommission',
-            'recentTransactions'
-        ));
+        return view('dashboard.agent', [
+            'activeTransactions' => $activeTransactions,
+            'pendingApprovals' => $pendingApprovals,
+            'totalCommission' => $totalCommission,
+            'recentTransactions' => $recentTransactions,
+            'transactions' => $transactions,
+            'members' => $members
+        ]);
     }
 
     public function showClientDashboard()
@@ -144,7 +205,7 @@ class DashboardController extends Controller {
             ->take(5)
             ->get();
 
-        // Assume client is paying for one active property
+        // Get active transaction for payment tracking
         $activeTransaction = $transactions->firstWhere('status', 'Approved');
         $property = $activeTransaction?->property;
 
@@ -157,18 +218,18 @@ class DashboardController extends Controller {
         $paidPercent = $propertyPrice > 0 ? round(($totalPaid / $propertyPrice) * 100) : 0;
         $balancePercent = 100 - $paidPercent;
 
-        return view('dashboard.client', compact(
-            'transactions',
-            'totalSpent',
-            'activeTransactions',
-            'completedTransactions',
-            'recentPayments',
-            'property',
-            'totalPaid',
-            'totalBalance',
-            'paidPercent',
-            'balancePercent'
-        ));
+        return view('dashboard.client', [
+            'transactions' => $transactions,
+            'totalSpent' => $totalSpent,
+            'activeTransactions' => $activeTransactions,
+            'completedTransactions' => $completedTransactions,
+            'recentPayments' => $recentPayments,
+            'property' => $property,
+            'totalPaid' => $totalPaid,
+            'totalBalance' => $totalBalance,
+            'paidPercent' => $paidPercent,
+            'balancePercent' => $balancePercent
+        ]);
     }
 
     public function store(Request $request)
