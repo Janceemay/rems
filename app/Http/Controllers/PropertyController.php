@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePropertyRequest;
-use App\Models\{Property, Developer, AuditLog};
+use App\Models\{Property, Developer, AuditLog, User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
-class PropertyController extends Controller {
-    public function index(Request $request) {
+class PropertyController extends Controller
+{
+    public function index(Request $request)
+    {
         $query = Property::query()->with('developer');
 
         if ($request->filled('q')) {
@@ -41,13 +43,15 @@ class PropertyController extends Controller {
         return view('properties.index', compact('properties', 'developers'));
     }
 
-    public function create() {
+    public function create()
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
         $developers = Developer::all();
         return view('properties.create', compact('developers'));
     }
-    
-    public function store(Request $request) {
+
+    public function store(Request $request)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
         $validator = Validator::make($request->all(), (new StorePropertyRequest())->rules());
@@ -78,14 +82,16 @@ class PropertyController extends Controller {
         return redirect()->route('properties.index')->with('success', 'Property created successfully.');
     }
 
-    public function show($property_id) {
+    public function show($property_id)
+    {
         $property = Property::where('property_id', $property_id)->firstOrFail();
         $property->load('developer', 'transactions', 'assignedAgents');
-
-        return view('properties.show', compact('property'));
+        $agents = User::whereHas('role', fn($q) => $q->where('role_name', 'Agent'))->get();
+        return view('properties.show', compact('property', 'agents'));
     }
 
-    public function edit($property_id) {
+    public function edit($property_id)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
         $property = Property::where('property_id', $property_id)->firstOrFail();
         $developers = Developer::all();
@@ -93,9 +99,10 @@ class PropertyController extends Controller {
         return view('properties.edit', compact('property', 'developers'));
     }
 
-    public function update(Request $request, $property_id) {
+    public function update(Request $request, $property_id)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
-        
+
         $property = Property::where('property_id', $property_id)->firstOrFail();
 
         $validator = Validator::make($request->all(), (new StorePropertyRequest())->rules());
@@ -125,10 +132,67 @@ class PropertyController extends Controller {
         return redirect()->route('properties.index')->with('success', 'Property updated successfully.');
     }
 
+    public function assignAgent(Request $request, $property_id)
+    {
+        $request->validate([
+            'agent_id' => 'required|exists:users,user_id',
+        ]);
+
+        $property = Property::findOrFail($property_id);
+        $property->assignedAgents()->syncWithoutDetaching([$request->agent_id]);
+
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'assign_agent',
+            'target_table' => 'property_assignments',
+            'target_id' => $property->property_id,
+            'remarks' => "Agent ID {$request->agent_id} assigned to property '{$property->title}'",
+        ]);
+
+        return back()->with('success', 'Agent added successfully.');
+    }
+
+    public function updateAgents(Request $request, $property_id)
+    {
+        $request->validate([
+            'agent_ids' => 'array',
+            'agent_ids.*' => 'exists:users,user_id',
+        ]);
+
+        $property = Property::findOrFail($property_id);
+        $property->assignedAgents()->sync($request->agent_ids ?? []);
+
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update_agents',
+            'target_table' => 'property_assignments',
+            'target_id' => $property->property_id,
+            'remarks' => "Updated agent assignments for property '{$property->title}'",
+        ]);
+
+        return back()->with('success', 'Assigned agents updated successfully.');
+    }
+
+    public function removeAgent($property_id, $agent_id)
+    {
+        $property = Property::findOrFail($property_id);
+        $property->assignedAgents()->detach($agent_id);
+
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'remove_agent',
+            'target_table' => 'property_assignments',
+            'target_id' => $property->property_id,
+            'remarks' => "Agent ID {$agent_id} removed from property '{$property->title}'",
+        ]);
+
+        return back()->with('success', 'Agent removed successfully.');
+    }
+
     public function destroy($property_id)
     {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
-        
+
         $property = Property::where('property_id', $property_id)->firstOrFail();
 
         if ($property->image_url && file_exists(public_path('storage/' . $property->image_url))) {

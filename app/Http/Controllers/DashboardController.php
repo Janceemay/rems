@@ -6,11 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\{Property, Transaction, User, Payment, Commission, Team, Quota, AuditLog, Agent};
 
-class DashboardController extends Controller {
-    public function show() {
+class DashboardController extends Controller
+{
+    public function show()
+    {
         $user = Auth::user();
         $role = strtolower($user->role->role_name ?? '');
-    
+
         // Role-based dashboard routing
         return match ($role) {
             'admin' => $this->showAdminDashboard(),
@@ -21,15 +23,16 @@ class DashboardController extends Controller {
         };
     }
 
-    public function assignAgent(Request $request, Transaction $transaction) {
+    public function assignAgent(Request $request, Transaction $transaction)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
-        
+
         $validated = $request->validate([
             'agent_id' => 'required|exists:users,user_id'
         ]);
-        
+
         $transaction->update(['agent_id' => $validated['agent_id']]);
-        
+
         AuditLog::create([
             'user_id' => Auth::id(),
             'action' => 'assign',
@@ -37,15 +40,16 @@ class DashboardController extends Controller {
             'target_id' => $transaction->transaction_id,
             'remarks' => "Transaction assigned to agent by " . Auth::user()->full_name,
         ]);
-        
+
         return redirect()->back()->with('success', 'Transaction assigned to agent');
     }
 
-    public function assignToMe(Transaction $transaction) {
+    public function assignToMe(Transaction $transaction)
+    {
         $this->authorizeRoles(['Agent']);
-        
+
         $transaction->update(['agent_id' => Auth::id()]);
-        
+
         AuditLog::create([
             'user_id' => Auth::id(),
             'action' => 'accept',
@@ -53,16 +57,17 @@ class DashboardController extends Controller {
             'target_id' => $transaction->transaction_id,
             'remarks' => "Transaction accepted by agent " . Auth::user()->full_name,
         ]);
-        
+
         return redirect()->back()->with('success', 'Transaction accepted');
     }
 
-    private function authorizeRoles(array $roles) {
+    private function authorizeRoles(array $roles)
+    {
         $userRole = optional(Auth::user()->role)->role_name ?? '';
         if (!in_array($userRole, $roles)) {
             abort(403, 'Unauthorized action.');
         }
-}
+    }
     public function showAdminDashboard()
     {
         $totalProperties = Property::count();
@@ -83,18 +88,18 @@ class DashboardController extends Controller {
     public function showManagerDashboard()
     {
         $manager = Auth::user();
-        
+
         // Get all transactions with relationships
         $transactions = Transaction::with(['client.user', 'property', 'agent'])->latest()->get();
-        
-        
+
+
         // Get all agents
         $agents = User::whereHas('role', function ($q) {
             $q->where('role_name', 'Agent');
         })->get();
 
         // Calculate top agent
-        $topAgent = $agents->map(function($agent) use ($transactions) {
+        $topAgent = $agents->map(function ($agent) use ($transactions) {
             $agentTransactions = $transactions->where('agent_id', $agent->user_id);
             return [
                 'agent' => $agent,
@@ -110,7 +115,7 @@ class DashboardController extends Controller {
 
         $totalAgents = User::whereHas('role', fn($q) => $q->where('role_name', 'Agent'))->count();
         $activeQuotas = Quota::where('manager_id', $manager->user_id)->count();
-        
+
         $totalSales = Transaction::where('status', 'Completed')->sum('total_amount');
 
         $topAgents = User::whereHas('transactions')
@@ -130,7 +135,7 @@ class DashboardController extends Controller {
         $members = Agent::where('manager_id', $manager->user_id)
             ->with('user')
             ->get()
-            ->map(function($member) {
+            ->map(function ($member) {
                 $member->full_name = $member->user->full_name ?? 'N/A';
                 return $member;
             });
@@ -156,7 +161,7 @@ class DashboardController extends Controller {
         $members = Agent::where('manager_id', $agent->manager_id)
             ->with('user')
             ->get()
-            ->map(function($member) {
+            ->map(function ($member) {
                 $member->full_name = $member->user->full_name ?? 'N/A';
                 return $member;
             });
@@ -164,7 +169,11 @@ class DashboardController extends Controller {
         // Get all transactions for agent dashboard needs
         $transactions = Transaction::with(['client.user', 'property', 'agent'])->latest()->get();
 
-        $activeTransactions = Transaction::where('agent_id', $agent->user_id)->count();
+        $activeTransaction = Transaction::with(['property', 'client.user'])
+            ->where('agent_id', $agent->user_id)
+            ->whereIn('status', ['pending', 'approved'])
+            ->latest()
+            ->first();
         $pendingApprovals = Transaction::where('agent_id', $agent->user_id)
             ->where('status', 'Pending')
             ->count();
@@ -178,13 +187,26 @@ class DashboardController extends Controller {
             ->take(10)
             ->get();
 
+        $labels = [];
+        $values = [];
+
+        foreach ($members as $member) {
+            $labels[] = $member->full_name;
+            $commissionTotal = Commission::where('agent_id', $member->user_id)
+                ->where('approval_status', 'approved')
+                ->sum('amount');
+            $values[] = $commissionTotal;
+        }
+
         return view('dashboard.agent', [
-            'activeTransactions' => $activeTransactions,
+            'activeTransaction' => $activeTransaction,
             'pendingApprovals' => $pendingApprovals,
             'totalCommission' => $totalCommission,
             'recentTransactions' => $recentTransactions,
+            'contributionLabels' => $labels,
+            'contributionValues' => $values,
             'transactions' => $transactions,
-            'members' => $members
+            'teamMembers' => $members,
         ]);
     }
 

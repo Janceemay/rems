@@ -7,7 +7,8 @@ use App\Models\{Transaction, Client, Property, AuditLog, Commission};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class TransactionController extends Controller {
+class TransactionController extends Controller
+{
     public function index()
     {
         $user = Auth::user();
@@ -34,7 +35,25 @@ class TransactionController extends Controller {
         return view('transactions.index', compact('transactions'));
     }
 
-    public function create() {
+    public function create(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->isRole('Client') && $request->has('property_id')) {
+            $property = Property::findOrFail($request->property_id);
+            $client = Client::where('user_id', $user->user_id)->first();
+
+            if (!$client) {
+                abort(403, 'Client profile not found.');
+            }
+
+            return view('transactions.create', [
+                'isClient' => true,
+                'property' => $property,
+                'client' => $client,
+            ]);
+        }
+
         $this->authorizeRoles(['Admin', 'Sales Manager', 'Agent']);
 
         $clients = Client::with('user')->get();
@@ -43,24 +62,92 @@ class TransactionController extends Controller {
         return view('transactions.create', compact('clients', 'properties'));
     }
 
-    public function store(StoreTransactionRequest $request) {
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+
+        // CLIENT INQUIRY FLOW
+        if ($user->isRole('Client')) {
+            $request->validate([
+                'property_id' => 'required|exists:properties,property_id',
+                'inquiry_details' => 'nullable|string|max:1000',
+            ]);
+
+            $clientId = optional($user->client)->client_id;
+            if (!$clientId) {
+                abort(403, 'Client profile not found.');
+            }
+
+            $property = Property::findOrFail($request->property_id);
+
+            if (!$property->isAvailable()) {
+                return back()->withErrors(['property_id' => 'This property is not available.'])->withInput();
+            }
+
+            $exists = Transaction::where('client_id', $clientId)
+                ->where('property_id', $property->property_id)
+                ->whereNotIn('status', ['Canceled'])
+                ->first();
+
+            if ($exists) {
+                return back()->withErrors(['property_id' => 'You already have an inquiry for this property.'])->withInput();
+            }
+
+            $assignedAgent = $property->assignedAgents->first()?->user_id;
+
+            if (!$assignedAgent) {
+                return back()->withErrors(['property_id' => 'No agent assigned to this property.'])->withInput();
+            }
+
+            $transaction = Transaction::create([
+                'client_id' => $clientId,
+                'property_id' => $property->property_id,
+                'agent_id' => $assignedAgent,
+                'status' => 'pending',
+                'request_date' => now(),
+                'total_amount' => $property->price,
+                'inquiry_details' => $request->inquiry_details,
+            ]);
+
+            $property->update(['status' => 'Reserved']);
+
+            AuditLog::create([
+                'user_id' => $user->user_id,
+                'action' => 'inquire',
+                'target_table' => 'transactions',
+                'target_id' => $transaction->transaction_id,
+                'remarks' => "Client inquiry for property '{$property->title}'",
+            ]);
+
+            return redirect()->route('properties.show', $property->property_id)->with('success', 'Inquiry submitted successfully.');
+        }
+
+        // STAFF TRANSACTION FLOW
         $this->authorizeRoles(['Admin', 'Sales Manager', 'Agent']);
-        $data = $request->validated();
+
+        $data = $request->validate([
+            'client_id' => 'required|exists:clients,client_id',
+            'property_id' => 'required|exists:properties,property_id',
+            'agent_id' => 'nullable|exists:users,user_id',
+        ]);
+
+        $property = Property::findOrFail($data['property_id']);
+
+        if (!$property->isAvailable()) {
+            return back()->withErrors(['property_id' => 'This property is not available for sale.'])->withInput();
+        }
 
         $exists = Transaction::where('client_id', $data['client_id'])
             ->where('property_id', $data['property_id'])
+            ->whereNotIn('status', ['Canceled'])
             ->first();
+
         if ($exists) {
             return back()->withErrors(['property_id' => 'A transaction for this client and property already exists.'])->withInput();
         }
 
-        $property = Property::findOrFail($data['property_id']);
-        if ($property->status !== 'Available') {
-            return back()->withErrors(['property_id' => 'This property is not available for sale.'])->withInput();
-        }
-
-        if (Auth::user()->isRole('Agent')) {
-            $data['agent_id'] = Auth::id();
+        if ($user->isRole('Agent')) {
+            $data['agent_id'] = $user->user_id;
         }
 
         $transaction = Transaction::create([
@@ -75,11 +162,11 @@ class TransactionController extends Controller {
         $property->update(['status' => 'Reserved']);
 
         AuditLog::create([
-            'user_id' => Auth::id(),
+            'user_id' => $user->user_id,
             'action' => 'create',
             'target_table' => 'transactions',
             'target_id' => $transaction->transaction_id,
-            'remarks' => "Transaction created for property '{$property->title}' by " . Auth::user()->full_name,
+            'remarks' => "Transaction created for property '{$property->title}' by {$user->full_name}",
         ]);
 
         return redirect()->route('transactions.index')->with('success', 'Transaction created successfully.');
@@ -100,7 +187,8 @@ class TransactionController extends Controller {
         return view('transactions.show', compact('transaction'));
     }
 
-    public function approve(Transaction $transaction) {
+    public function approve(Transaction $transaction)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
         if ($transaction->status === 'Approved') {
@@ -133,11 +221,12 @@ class TransactionController extends Controller {
         return redirect()->back()->with('success', 'Transaction approved successfully.');
     }
 
-    public function cancel(Request $request, Transaction $transaction) {
+    public function cancel(Request $request, Transaction $transaction)
+    {
         $request->validate(['reason' => 'required|string|max:255']);
 
         $transaction->update([
-            'status' => 'Cancelled',
+            'status' => 'Canceled',
             'cancellation_reason' => $request->reason,
         ]);
 
@@ -150,15 +239,16 @@ class TransactionController extends Controller {
             'action' => 'cancel',
             'target_table' => 'transactions',
             'target_id' => $transaction->transaction_id,
-            'remarks' => "Transaction #{$transaction->transaction_id} cancelled: {$request->reason}",
+            'remarks' => "Transaction #{$transaction->transaction_id} canceled: {$request->reason}",
         ]);
 
-        return redirect()->back()->with('success', 'Transaction cancelled successfully.');
+        return redirect()->back()->with('success', 'Transaction canceled successfully.');
     }
 
-    public function updateStatus(Request $request, Transaction $transaction) {
+    public function updateStatus(Request $request, Transaction $transaction)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
-        $request->validate(['status' => 'required|string|in:Pending,Approved,Cancelled,Completed']);
+        $request->validate(['status' => 'required|string|in:Pending,Approved,Canceled,Completed']);
 
         $transaction->update(['status' => $request->status]);
 
@@ -173,7 +263,8 @@ class TransactionController extends Controller {
         return redirect()->back()->with('success', 'Transaction status updated.');
     }
 
-    public function destroy(Transaction $transaction) {
+    public function destroy(Transaction $transaction)
+    {
         $this->authorizeRoles(['Admin']);
 
         $transaction->delete();
@@ -189,7 +280,8 @@ class TransactionController extends Controller {
         return redirect()->route('transactions.index')->with('success', 'Transaction deleted successfully.');
     }
 
-    private function authorizeRoles(array $roles) {
+    private function authorizeRoles(array $roles)
+    {
         $userRole = optional(Auth::user()->role)->role_name ?? '';
         if (!in_array($userRole, $roles)) {
             abort(403, 'Unauthorized action.');

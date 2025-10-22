@@ -8,7 +8,8 @@ use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ClientController extends Controller {
+class ClientController extends Controller
+{
     public function index()
     {
         $this->authorizeRoles(['Admin', 'Sales Manager', 'Agent']);
@@ -16,7 +17,8 @@ class ClientController extends Controller {
         return view('clients.index', compact('clients'));
     }
 
-    public function show(Client $client) {
+    public function show(Client $client)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager', 'Agent', 'Client']);
 
         $client->load('user', 'transactions.property');
@@ -28,7 +30,8 @@ class ClientController extends Controller {
         return view('clients.show', compact('client'));
     }
 
-    public function create() {
+    public function create()
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
         $users = User::whereHas('role', function ($q) {
@@ -38,7 +41,8 @@ class ClientController extends Controller {
         return view('clients.create', compact('users'));
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
         $data = $request->validate([
@@ -95,24 +99,44 @@ class ClientController extends Controller {
         $client = $user->client;
 
         if ($client) {
-            $client->update($validated);
+            $client->update([
+                'relationship_status' => $validated['relationship_status'] ?? null,
+                'birthday' => $validated['birthday'] ?? null,
+                'age' => $validated['age'] ?? null,
+                'gender' => $validated['gender'] ?? null,
+                'contact_number' => $validated['contact_number'] ?? null,
+                'address' => $validated['address'] ?? null,
+                'financing_type' => $validated['source_of_income'] ?? null,
+                'current_job' => $validated['current_job'] ?? null,
+            ]);
         } else {
             $validated['user_id'] = $user->user_id;
-            Client::create($validated);
+            $client = Client::create([
+                'user_id' => $user->user_id,
+                'relationship_status' => $validated['relationship_status'] ?? null,
+                'birthday' => $validated['birthday'] ?? null,
+                'age' => $validated['age'] ?? null,
+                'gender' => $validated['gender'] ?? null,
+                'contact_number' => $validated['contact_number'] ?? null,
+                'address' => $validated['address'] ?? null,
+                'financing_type' => $validated['source_of_income'] ?? null,
+                'current_job' => $validated['current_job'] ?? null,
+            ]);
         }
 
         AuditLog::create([
             'user_id' => $user->user_id,
             'action' => 'update',
             'target_table' => 'clients',
-            'target_id' => $user->client->client_id ?? 'new',
+            'target_id' => $client->client_id,
             'remarks' => "Client setup completed by {$user->full_name}",
         ]);
 
-        return redirect()->route('dashboard.client')->with('success', 'Profile setup completed.');
+        return redirect()->route('dashboard')->with('success', 'Profile setup completed.');
     }
 
-    public function edit(Client $client) {
+    public function edit(Client $client)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
         $users = User::whereHas('role', function ($q) {
@@ -122,7 +146,8 @@ class ClientController extends Controller {
         return view('clients.edit', compact('client', 'users'));
     }
 
-    public function update(Request $request, Client $client) {
+    public function update(Request $request, Client $client)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
         $data = $request->validate([
@@ -146,7 +171,8 @@ class ClientController extends Controller {
         return redirect()->route('clients.index')->with('success', 'Client updated successfully.');
     }
 
-    public function destroy(Client $client) {
+    public function destroy(Client $client)
+    {
         $this->authorizeRoles(['Admin', 'Sales Manager']);
 
         $clientId = $client->client_id;
@@ -163,7 +189,8 @@ class ClientController extends Controller {
         return redirect()->route('clients.index')->with('success', 'Client deleted successfully.');
     }
 
-    private function authorizeRoles(array $roles) {
+    private function authorizeRoles(array $roles)
+    {
         $userRole = optional(Auth::user()->role)->role_name ?? '';
         if (!in_array($userRole, $roles)) {
             abort(403, 'Unauthorized action.');
@@ -185,24 +212,46 @@ class ClientController extends Controller {
     {
         $user = Auth::user();
 
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'bio' => 'nullable|string|max:1000',
+            'age' => 'nullable|integer|min:18|max:100',
+            'gender' => 'nullable|string|in:male,female,other',
+            'phone' => 'nullable|string|max:20',
             'profile_picture' => 'nullable|image|max:2048',
+            'birthday' => 'nullable|date',
+            'relationship_status' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:255',
+            'occupation' => 'nullable|string|max:100',
+            'source_of_income' => 'nullable|string|max:100',
         ]);
+
+        // Update user
+        $user->full_name = $validated['name'];
+        $user->age = $validated['age'] ?? $user->age;
+        $user->gender = $validated['gender'] ?? $user->gender;
+        $user->contact_number = $validated['phone'] ?? $user->contact_number;
 
         if ($request->hasFile('profile_picture')) {
             $path = $request->file('profile_picture')->store('profile_pictures', 'public');
             $user->profile_picture = '/storage/' . $path;
         }
 
-        $user->full_name = $request->name;
         $user->save();
+
+        // Update or create client
+        $client = Client::firstOrCreate(['user_id' => $user->user_id]);
+        $client->update([
+            'birthday' => $validated['birthday'] ?? null,
+            'relationship_status' => $validated['relationship_status'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'current_job' => $validated['occupation'] ?? null,
+            'financing_type' => $validated['source_of_income'] ?? null,
+        ]);
 
         AuditLog::create([
             'user_id' => $user->user_id,
             'action' => 'update',
-            'target_table' => 'users',
+            'target_table' => 'users,clients',
             'target_id' => $user->user_id,
             'remarks' => "Client profile updated by {$user->full_name}",
         ]);

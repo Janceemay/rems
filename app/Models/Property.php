@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Property extends Model
 {
     use HasFactory;
-    
+
     protected $primaryKey = 'property_id';
     protected $fillable = [
         'developer_id',
@@ -102,6 +102,6 @@ class Property extends Model
 
     public function isAvailable(): bool
     {
-        return $this->status === 'available';
+        return strtolower($this->status) === 'available';
     }
 }

@@ -10,10 +10,10 @@
     <x-sidebar.link route="dashboard" icon="dashboard" label="Dashboard" />
     <x-sidebar.link route="properties.index" icon="apartment" label="Properties" />
     <x-sidebar.link route="profile" icon="user" label="Profile" />
+    <x-sidebar.link route="transactions.index" icon="wallet" label="Transactions" />
 
     {{-- Agent Navigation --}}
     @if ($role === 'agent')
-        {{-- Add more agent-specific links here --}}
     @endif
 
     {{-- Sales Manager Navigation --}}
