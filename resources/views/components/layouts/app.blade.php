@@ -1,93 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K. Palafox Realty</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>K.Palafox Realty</title>
+    {{-- Vite --}}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {{-- Tailwind --}}
+    <script src="https://cdn.tailwindcss.com"></script>
+    {{-- UIcons --}}
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
 </head>
-<body class="bg-gradient-to-b from-sky-100 to-sky-300">
-    {{-- Wrapper --}}
-    <div>
-        {{-- Header --}}
-        <header class="text-black p-6">
-            <div class="max-w-7xl mx-auto flex justify-between items-center gap-8">
-                {{-- Logo --}}
-                <div class="flex-shrink-0">
-                    <img src="/images/logos/KPR_logo.png" alt="Logo" class="h-12 w-auto">
-                </div>
 
-                {{-- Navigation --}}
-                <nav class="flex items-center gap-6">
-                    <a href="#home" class="hover:underline">Home</a>
-                    <a href="#about" class="hover:underline">About</a>
-                    <a href="#developers" class="hover:underline">Developers</a>
-                    <a href="#property" class="hover:underline">Property</a>
-                    <a href="#location" class="hover:underline">Location</a>
-                </nav>
+<body x-data="{ sidebarOpen: true, collapsed: false }" class="bg-white min-h-screen flex">
 
-                {{-- Buttons --}}
-                <div class="flex gap-3 ml-4">
-                    <button type="button" onclick="window.location.href='{{ route('login') }}'" class="text-black bg-white border border-gray-200 rounded-lg text-sm text-center p-2">
-                        Log In
-                    </button>
-                    <button type="button"  onclick="window.location.href='{{ route('register') }}'" class="text-white bg-blue-500 border border-gray-200 rounded-lg text-sm text-center p-2">Sign Up</button>
-                </div>
-            </div>
-        </header>
+  <!-- Sidebar -->
+  <aside class="fixed top-0 left-0 h-full bg-white shadow-lg z-40 transition-all duration-300 ease-in-out"
+         :class="{ 'w-20': collapsed, 'w-64': !collapsed, '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
 
-        {{-- Page Content --}}
-        <main class="">
-            @yield('content')
-        </main>
-
-        {{-- Footer --}}
-        <footer class="text-black p-6">
-            <div class="max-w-7xl mx-auto flex flex-nowrap justify-between gap-8">
-
-                {{-- Logo --}}
-                <div class="w-full sm:w-1/2 md:w-1/4">
-                    <img src="/images/logos/KPR_logo.png" class="size-" alt="Logo">
-                    <address>Papaya Road, Mabini Homesite, Cabanatuan City Nueva Ecija 3100 Philippines</address>
-                </div>
-
-                {{-- Navigation 1 --}}
-                <nav class="w-full sm:w-1/2 md:w-1/4">
-                    <h4 class="text-xl font-semibold">Home</h4>
-                    <ul>
-                        <li><a href="#about" class="hover:underline">About Us</a></li>
-                        <li><a href="#team" class="hover:underline">Team</a></li>
-                        <li><a href="#developers" class="hover:underline">Developers</a></li>
-                        <li><a href="#location" class="hover:underline">Location</a></li>
-                    </ul>
-                </nav>
-
-                {{-- Navigation 2 --}}
-                <nav class="w-full sm:w-1/2 md:w-1/4">
-                    <h4 class="text-xl font-semibold">Link</h4>
-                    <ul>
-                        <li><a href="#xxx" class="hover:underline">Help Center</a></li>
-                        <li><a href="#xxx" class="hover:underline">Contact</a></li>
-                        <li><a href="#xxx" class="hover:underline">Privacy Policy</a></li>
-                    </ul>
-                </nav>
-
-                {{-- Navigation 3 --}}
-                <div class="w-full sm:w-1/2 md:w-1/4">
-                    <h4 class="text-xl font-semibold">Contact Us</h4>
-                    <ul>
-                        <li><a href="#xxx" class="hover:underline">K. Palafox Realty</a></li>
-                        <li><a href="#xxx" class="hover:underline">kpalafoxrealtyofficial@gmail.com</a></li>
-                        <li><a href="#xxx" class="hover:underline">09123456789</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            {{-- Copyright --}}
-            <div class="mt-6 text-center mx-auto">
-                <p>© 2025 K. Palafox Realty. All rights reserved.</p>
-            </div>
-        </footer>
+    <!-- Collapse Toggle -->
+    <div class="p-6 flex justify-between items-center">
+      <h1 x-show="!collapsed" class="text-xl font-bold">K.Palafox Realty</h1>
+      <button @click="collapsed = !collapsed" class="text-[#2a47ff]">
+        <i class="fi fi-br-menu-burger text-2xl"></i>
+      </button>
     </div>
+
+    <!-- Dynamic Sidebar Navigation -->
+    @include('components.sidebar.sidebar')
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 transition-all duration-300 ease-in-out"
+       :class="{ 'ml-20': collapsed && sidebarOpen, 'ml-64': !collapsed && sidebarOpen, 'ml-0': !sidebarOpen }">
+
+    <!-- Top Navigation -->
+    <div class="p-4 border-b-2 border-gray-300 bg-white">
+      <div class="flex items-center gap-4">
+        <h2 class="text-2xl font-bold text-gray-800">@yield('title')</h2>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <main class="p-6">
+      @yield('content')
+    </main>
+  </div>
 </body>
 </html>

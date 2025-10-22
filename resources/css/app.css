@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @import "flowbite/src/themes/default";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -6,7 +6,27 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+:root {
+    --color-primary: #2a47ff;
+    --color-accent: #fef3c7;
+    --color-neutral: #f9fafb;
+    --font-sans: Inter, sans-serif;
+}
+
+@layer components {
+    .btn-primary {
+        @apply bg-[#2a47ff] text-white px-4 py-2 rounded-2xl hover:bg-[#2a47ff]/80 transition;
+    }
+
+    .section-container {
+        @apply max-w-7xl mx-auto px-4 py-16;
+    }
+
+    .heading-xl {
+        @apply text-3xl sm:text-4xl md:text-6xl font-bold text-[#2a47ff];
+    }
+
+    .text-base-lg {
+        @apply text-base sm:text-lg md:text-xl text-gray-700;
+    }
 }

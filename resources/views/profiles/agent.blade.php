@@ -1,71 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      background: #C7FFD8;
-    }
-  </style>
-</head>
-<body class="flex flex-row">
-  <style>
-    @keyframes fade {
-      0% {opacity: 0%; top: -15px}
-      100% {opacity: 100%; top: 0}
-    }
-    #editProfileModal {
-      animation: fade;
-      animation-duration: 0.25s;
-    }
-  </style>
+@extends('components.layouts.app')
 
-  <aside class="w-1/4">
-    <div class="bg-white p-4 h-full shadow rounded">
-      <h1 class="font-bold text-xl mb-4">K.Palafox Realty</h1>
-      <nav>
-        <ul class="space-y-4">
-          <li><a class="text-black no-underline" href="{{ route('profiles.agent') }}">My Profile</a></li>
-          <li><a class="text-black no-underline" href="{{ route('dashboard.agent') }}">Dashboard</a></li>
-          <li>
-            <form action="{{ route('logout') }}" method="POST">
-              @csrf
-              <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" type="submit">Logout</button>
-            </form>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </aside>
+@section('title', 'Profile')
 
-  <div class="w-3/4 p-4 h-screen overflow-y-auto">
-    <div class="flex flex-wrap -mx-2">
-      <div class="w-full md:w-1/3 px-2">
-        <div class="bg-white shadow rounded flex flex-col items-center p-4">
+@section('content')
+<main class="flex-1 p-6 overflow-y-auto space-y-6">
+  <!-- Profile Section -->
+  <div class="w-full xl:w-3/4 mx-auto">
+    <div class="flex flex-wrap gap-4">
+      <!-- Profile Card -->
+      <div class="w-full md:w-1/3">
+        <div class="bg-white shadow rounded flex flex-col items-center p-6">
           <img src="{{ asset($user->profile_picture) }}"
                alt="Profile Picture"
-               class="rounded-full mb-3"
-               style="width: 120px; height: 120px; object-fit: cover;" />
+               class="rounded-full mb-4 w-32 h-32 object-cover" />
           <h4 class="font-bold text-lg">{{ $user->full_name }}</h4>
           <p class="text-gray-500">{{ $user->email }}</p>
-          <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-2"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editProfileModal">
+          <button @click="document.getElementById('editProfileModal').classList.remove('hidden')"
+                  class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">
             Edit Profile
           </button>
         </div>
       </div>
-      <div class="w-full md:w-2/3 px-2 flex justify-end">
-        <div class="bg-white shadow rounded w-1/2 p-4">
-          <ul class="space-y-2">
-            <li><b>Status:</b> {{ $user->role->role_name }}</li>
-            <li><b>Gender:</b> {{ $user->gender }}</li>
-            <li><b>Age:</b> {{ $user->age }}</li>
-            <li><b>Phone:</b> {{ $user->contact_number }}</li>
+
+      <!-- Info Card -->
+      <div class="w-full md:w-2/3 flex justify-end">
+        <div class="bg-white shadow rounded w-full md:w-2/3 p-6">
+          <ul class="space-y-3 text-gray-700">
+            <li><span class="font-semibold">Status:</span> {{ $user->role->role_name }}</li>
+            <li><span class="font-semibold">Gender:</span> {{ $user->gender }}</li>
+            <li><span class="font-semibold">Age:</span> {{ $user->age }}</li>
+            <li><span class="font-semibold">Phone:</span> {{ $user->contact_number }}</li>
           </ul>
         </div>
       </div>
@@ -107,14 +71,14 @@
       </div>
     </div>
   </div>
-  
-  <script>
-    document.querySelectorAll('[data-bs-toggle="modal"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const target = btn.getAttribute('data-bs-target');
-        document.querySelector(target).classList.remove('hidden');
-      });
+</main>
+
+<script>
+  document.querySelectorAll('[data-bs-toggle="modal"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-bs-target');
+      document.querySelector(target).classList.remove('hidden');
     });
-  </script>
-</body>
-</html>
+  });
+</script>
+@endsection
